@@ -1,0 +1,18 @@
+max_iter 100
+
+# This is a feasibility problem
+grad_f_constant yes
+
+constr_viol_tol 1e-16
+
+#acceptable_constr_viol_tol 1e-6
+
+#acceptable_compl_inf_tol 1e2
+
+#acceptable_tol 1e3
+
+# BFGS Option
+hessian_approximation limited-memory
+
+# Check derivatives computed via dco - in other words, show errors of finite differences ;-)
+#derivative_test second-order

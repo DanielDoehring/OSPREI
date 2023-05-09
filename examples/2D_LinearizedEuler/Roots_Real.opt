@@ -1,0 +1,17 @@
+max_iter 250
+
+# TODO: Try high bound violations, but NO constraint violations
+
+# Objective is linear
+grad_f_constant yes
+
+# Try to enforce no violation of constraints
+#constr_viol_tol 1e-11
+
+#acceptable_tol 1e3
+
+# BFGS Option (sometimes used for e.g. first order consistency, then fine-tuned)
+hessian_approximation limited-memory
+
+# Check derivatives computed via dco - in other words, show errors of finite differences ;-)
+#derivative_test second-order

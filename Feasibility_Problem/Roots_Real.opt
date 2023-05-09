@@ -1,0 +1,19 @@
+max_iter 100
+
+# This is a feasibility problem
+grad_f_constant yes
+
+acceptable_constr_viol_tol 1e-4
+
+# Constraints wont be staisfied in reality without imaginary corrections
+expect_infeasible_problem yes
+
+#acceptable_compl_inf_tol 1e2
+
+#acceptable_tol 1e3
+
+# BFGS Option (sometimes used for e.g. first order consistency, then fine-tuned)
+hessian_approximation limited-memory
+
+# Check derivatives computed via dco - in other words, show errors of finite differences ;-)
+#derivative_test second-order
