@@ -43,7 +43,7 @@ Code for generation of **O**ptimal **S**tabiliy **P**olynomials in **R**oots for
 * [`IpOpt`](https://github.com/coin-or/Ipopt) is the core pacakge (optimizer). Following the [installation instructions](https://coin-or.github.io/Ipopt/INSTALL.html) should suffice, no special installation directory is required.
 For the linear solver [`MUMPS`](https://github.com/coin-or-tools/ThirdParty-Mumps) has been tested, both in combination with [`METIS`](https://github.com/KarypisLab/METIS) and without.
 * [`dco/c++`](https://www.nag.com/content/downloads-dco-c-versions) is used to compute the necessary derivatives algorithmically. `dco/c++` is proprietary, but chances are that you can obtain an academic license.
-After obtaining `dco/c++` and licensing it, you need to change the path in the Makefiles line 7 accordingly `DCO_PATH=YOUR/PATH/TO/DCO`.
+After obtaining `dco/c++` and licensing it, you need to change the path in the Makefiles (line 7) accordingly, i.e., `DCO_PATH=YOUR/PATH/TO/DCO`.
 
 ## Usage
 
