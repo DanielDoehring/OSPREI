@@ -6,8 +6,8 @@ Exemplary reference data:
 
 First order accurate method:
 
-`S = 14, t = 0.4375`
+`S = 14, t = 0.21875`
 
 Second order accurate method:
 
-`S = 14, t = 0.40728673037392582`
+`S = 14, t = 0.203191876411437988`
