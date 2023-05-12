@@ -4,6 +4,9 @@
 # If you have not obtained a copy of the EPL, you can find the license (version 2.0) at
 # https://www.eclipse.org/legal/epl-2.0/
 
+# Authors:  N.N
+#           Daniel Doehring                  RWTH Aachen University 2023-05-12
+
 DCO_PATH=$(HOME)/Software/dco
 
 # CHANGEME: This should be the name of your executable
