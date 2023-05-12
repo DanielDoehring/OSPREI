@@ -1,4 +1,4 @@
-max_iter 1000
+max_iter 500
 
 # Objective is linear
 grad_f_constant yes
