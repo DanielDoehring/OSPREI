@@ -1,7 +1,5 @@
 max_iter 250
 
-# TODO: Try high bound violations, but NO constraint violations
-
 # Objective is linear
 grad_f_constant yes
 

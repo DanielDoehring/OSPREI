@@ -193,7 +193,7 @@ bool Roots_RealImag::get_bounds_info(
    // Real part
    // Place relatively strict bounds (trust previous result)
    // TODO: Normalize this by time, otherwise the margin becomes for larger times bigger, although more roots are used
-   const Number RealPartMargin = 0.05 * std::abs(RealMin);
+   const Number RealPartMargin = 0.02 * std::abs(RealMin);
    std::cout << "RealPartMargin: " << RealPartMargin << std::endl << std::endl;
    for( Index i = 0; i < NumRoots; i++ ) {
       xy_l[i] = xy0[i] - RealPartMargin;
@@ -203,7 +203,7 @@ bool Roots_RealImag::get_bounds_info(
    }
 
    // Imag part
-   const Number IntPolErrorTol = 0.05 * ImagMax;
+   const Number IntPolErrorTol = 0.02 * ImagMax;
    std::cout << "IntPolErrorTol: " << IntPolErrorTol << std::endl << std::endl;
    for( Index i = NumRoots; i < NumUnknowns; i++ ) {
       xy_l[i] = std::max(-IntPolErrorTol, 0.); // Restrict to second quadrant

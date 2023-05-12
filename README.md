@@ -40,10 +40,18 @@ Code for generation of **O**ptimal **S**tabiliy **P**olynomials in **R**oots for
 
 ## Dependencies
 
-* [`IpOpt`](https://github.com/coin-or/Ipopt) is the core pacakge (optimizer). Following the [installation instructions](https://coin-or.github.io/Ipopt/INSTALL.html) should suffice, no special installation directory is required.
-For the linear solver [`MUMPS`](https://github.com/coin-or-tools/ThirdParty-Mumps) has been tested, both in combination with [`METIS`](https://github.com/KarypisLab/METIS) and without.
-* [`dco/c++`](https://www.nag.com/content/downloads-dco-c-versions) is used to compute the necessary derivatives algorithmically. `dco/c++` is proprietary, but chances are that you can obtain an academic license.
+* [`IpOpt`](https://github.com/coin-or/Ipopt) is the core package (optimizer). Following the [installation instructions](https://coin-or.github.io/Ipopt/INSTALL.html) should suffice, no special installation directory is required.
+For the linear solver only [`MUMPS`](https://github.com/coin-or-tools/ThirdParty-Mumps) has been applied both in combination with [`METIS`](https://github.com/KarypisLab/METIS) and without.
+* [`dco/c++`](https://www.nag.com/content/downloads-dco-c-versions) is used to compute the necessary derivatives algorithmically. `dco/c++` is proprietary software, but chances are that you can obtain an academic license if you are working in research.
 After obtaining `dco/c++` and licensing it, you need to change the path in the Makefiles (line 7) accordingly, i.e., `DCO_PATH=YOUR/PATH/TO/DCO`.
+
+## Building
+After obtaining and licensing the dependencies, execute in both directories `Feasibility_Problem` and `Optimization_Problem` 
+```
+make -j NUMTHREADS
+```
+where you can specify the `NUMTHREADS` according to your machine, e.g. `8`.
+This builds object files and binaries in the corresponding directories `obj` and `bin`.
 
 ## Usage
 
@@ -59,3 +67,6 @@ A call would then look like this:
 ./Roots_Real(Imag).exe S p S_ref dt_ref Spectrum PathToHullPoints
 ```
 Again, this is best seen in the examples.
+
+`Roots_Real.exe` looks for the parameter file `Roots_Real.opt` and `Roots_RealImag.exe` accordingly for `Roots_RealImag.opt` in the working directory.
+If none of these files is present, default `Ipopt` options are used.
