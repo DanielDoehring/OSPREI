@@ -245,6 +245,24 @@ void compute_a_coeffs(const int NumStages, const int NumStageEvals, const bool O
             << std::numeric_limits<MP_Real>::digits10 << " (significant) digits" << std::endl;
 
   const std::vector<MP_Real> MonCoeffs = ComputeCoeffs(OddDegree, ConsOrder, NumStageEvals, RootsReal, RootsImag);
+
+  std::ofstream MC_file("gamma_" + std::to_string(NumStageEvals) + ".txt");
+  for(size_t i = 0; i < NumStageEvals - ConsOrder; i++) {
+    std::stringstream StringStr; // On purpose within loop (automatic reset)
+    // Double precision
+    //StringStr << std::setprecision(std::numeric_limits<Number>::max_digits10);
+    //StringStr << a_DBL[i];
+
+    // Multi-precision
+    StringStr << std::setprecision(std::numeric_limits<MP_Real>::max_digits10);
+    StringStr << MonCoeffs[i];
+
+    MC_file << StringStr.str();
+    if(i != NumStageEvals - ConsOrder - 1)
+      MC_file << "\n";
+  }
+  MC_file.close();
+
   const std::vector<MP_Real> SE_Factors = Compute_SE_Factors(NumStages, NumStageEvals, ConsOrder);
 
   std::vector<MP_Real> a_MP(MonCoeffs);

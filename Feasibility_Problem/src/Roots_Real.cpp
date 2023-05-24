@@ -170,8 +170,8 @@ Roots_Real::Roots_Real(
 
   std::cout << "Initial values are: " << std::endl;
   for(size_t i = 0; i < NumUnknowns; i++)
-    //std::cout << x0[i] << std::endl;
-    std::cout << x0[i] << " " << Lin_IntPol(x0[i], HullRealScaled, HullImagScaled, ImagDiff_over_RealDiff) << std::endl;
+    //std::cout << x0[i] << " " << Lin_IntPol(x0[i], HullRealScaled, HullImagScaled, ImagDiff_over_RealDiff) << std::endl;
+    std::cout << x0[i] << "+" << Lin_IntPol(x0[i], HullRealScaled, HullImagScaled, ImagDiff_over_RealDiff) << "i" << std::endl;
   std::cout << std::endl;
 
    xMinConstraintViolation = new Number[NumUnknowns];

@@ -47,7 +47,7 @@ BIN_DIR := bin
 
 ##########################################################################
 
-all: Roots_Real Roots_Real_VarHull Roots_RealImag
+all: Roots_Real Roots_RealImag
 
 .SUFFIXES: .cpp .o
 
@@ -57,9 +57,6 @@ Roots_Real: $(OBJ_DIR)/Roots_Real.o $(OBJ_DIR)/Main_Roots_Real.o | $(BIN_DIR)
 Roots_RealImag: $(OBJ_DIR)/Roots_RealImag.o $(OBJ_DIR)/Main_Roots_RealImag.o
 	$(CXX) $(CXXLINKFLAGS) $(CXXFLAGS) -o $(BIN_DIR)/$@.exe $(OBJ_DIR)/Roots_RealImag.o $(OBJ_DIR)/Main_Roots_RealImag.o $(ADDLIBS) $(LIBS)
 
-
-Roots_Real_VarHull: $(OBJ_DIR)/Roots_Real_VarHull.o $(OBJ_DIR)/Main_Roots_Real_VarHull.o | $(BIN_DIR)
-	$(CXX) $(CXXLINKFLAGS) $(CXXFLAGS) -o $(BIN_DIR)/$@.exe $(OBJ_DIR)/Roots_Real_VarHull.o $(OBJ_DIR)/Main_Roots_Real_VarHull.o $(ADDLIBS) $(LIBS)
 
 # Object files
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
