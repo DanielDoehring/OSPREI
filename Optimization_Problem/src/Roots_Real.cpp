@@ -263,7 +263,7 @@ bool Roots_Real::get_bounds_info(
    x_l[NumRoots] = 1e-6; // Safety guard (no division by zero)
    //x_l[NumRoots] = 0.8 * dtExp; // Safety guard (no division by zero)
 
-   x_u[NumRoots] = 1.0 * dtExp; // Allow for slightly larger timestep
+   x_u[NumRoots] = 1.1 * dtExp; // Allow for slightly larger timestep
 
    for( Index i = 0; i < NumEigVals; i++ ) {
      // Not clear what is easier for the optimizer to handle

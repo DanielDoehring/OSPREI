@@ -214,7 +214,7 @@ bool Roots_RealImag::get_bounds_info(
    xy_l[NumUnknowns-1] = 0.;
    //xy_l[NumUnknowns-1] = xy0[NumRoots]; // Try to be at least as good as real-only solution
    
-   xy_u[NumUnknowns-1] = 1.0 * dtExp;
+   xy_u[NumUnknowns-1] = 1.1 * dtExp; // Allow for some increase in maximum timestep
 
    for( Index i = 0; i < NumEigVals; i++ ) {
      g_l[i] = 0.; // Automatically ensured by abs, seems to benefit optimization

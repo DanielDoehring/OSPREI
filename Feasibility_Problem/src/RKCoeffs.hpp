@@ -107,7 +107,7 @@ std::vector<MP_Real> ComputeCoeffs(const bool OddDegree, const int ConsOrder, co
   std::vector<MP_Real> MonCoeffs = std::vector<MP_Real>(NumStageEvals);
   for(size_t i = 0; i < NumStageEvals; i++) {
     MonCoeffs[i] = static_cast<MP_Real>(real(MonCoeffsComplex[i]));
-    std::cout << MonCoeffs[i] << std::endl;
+    //std::cout << MonCoeffs[i] << std::endl;
   }
 
   //std::cout << "Smallest coefficient is (order only of interest): " << MonCoeffs[NumStageEvals - ConsOrder - 1] << std::endl;
@@ -333,6 +333,7 @@ void compute_a_coeffs(const int NumStages, const int NumStageEvals, const bool O
     std::cout << temp_DBL << std::endl;
   }
 
+  /*
   std::cout << std::endl << "Checking stab. constr. computed from a-coeffs in Multiprecision " << std::endl << std::endl;
   CheckStability(NumStages, NumStageEvals, ConsOrder, a_MP, SE_Factors, NumEigVals, RealEigValsScaled, ImagEigValsScaled);
 
@@ -343,6 +344,7 @@ void compute_a_coeffs(const int NumStages, const int NumStageEvals, const bool O
                                            NumEigVals, RealEigValsScaled, ImagEigValsScaled);
   std::cout << std::endl << "In theory optimal timestep degenerates to: " << dtScaling
             << " of desired value, i.e., " << dtExp * dtScaling  << std::endl;
+  */
 
   // Need to flip coefficients since we compute the higher ones first
   std::reverse(a_MP.begin(), a_MP.end());

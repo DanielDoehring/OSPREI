@@ -289,6 +289,7 @@ void compute_a_coeffs(const int NumStages, const int NumStageEvals, const bool O
   }
   */
 
+  /*
   std::cout << std::endl << "Checking stab. constr. computed from a-coeffs in Multiprecision " << std::endl << std::endl;
   CheckStability(NumStages, NumStageEvals, ConsOrder, a_MP, SE_Factors, NumEigVals, 
                  RealEigValsScaled, ImagEigValsScaled, dt/dtExp);
@@ -296,14 +297,17 @@ void compute_a_coeffs(const int NumStages, const int NumStageEvals, const bool O
   // Conversion from MP to double
   std::vector<double> a_DBL(a_MP.begin(), a_MP.end());
   std::vector<double> SE_Factors_DBL(SE_Factors.begin(), SE_Factors.end());
+
   std::cout << std::endl << "Checking stab. constr. computed from a-coeffs in double " << std::endl << std::endl;
   CheckStability(NumStages, NumStageEvals, ConsOrder, a_DBL, SE_Factors_DBL, NumEigVals, 
                  RealEigValsScaled, ImagEigValsScaled, dt/dtExp);
+  
 
   const double dtScaling = FindMaxTimeStep(NumStages, NumStageEvals, ConsOrder, a_DBL, SE_Factors_DBL, NumEigVals, 
                                            RealEigValsScaled, ImagEigValsScaled);
   std::cout << std::endl << "In theory optimal timestep degenerates to: " << dtScaling 
             << " of desired value, i.e., " << dt * dtScaling  << std::endl;
+  
 
   // Need to flip coefficients since we compute the higher ones first
   std::reverse(a_MP.begin(), a_MP.end());
@@ -325,6 +329,7 @@ void compute_a_coeffs(const int NumStages, const int NumStageEvals, const bool O
       a_file << "\n";
   }
   a_file.close();
+  */
 }
 
 #endif
