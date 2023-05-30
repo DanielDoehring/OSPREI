@@ -96,9 +96,17 @@ std::vector<MP_Real> ComputeCoeffs(const bool OddDegree, const int ConsOrder, co
 
   // 'MonCoeffs' are the monomial coefficients of the lower degree polynomial
   // For higher than consistency order 1, we need to hand over only the relevant part
+  /*
   std::vector<MP_Real> MonCoeffs = std::vector<MP_Real>(NumStageEvals - ConsOrder);
   for(size_t i = 0; i < NumStageEvals - ConsOrder; i++) {
     MonCoeffs[i] = static_cast<MP_Real>(real(MonCoeffsComplex[i + ConsOrder]));
+    std::cout << MonCoeffs[i] << std::endl;
+  }
+  */
+
+  std::vector<MP_Real> MonCoeffs = std::vector<MP_Real>(NumStageEvals);
+  for(size_t i = 0; i < NumStageEvals; i++) {
+    MonCoeffs[i] = static_cast<MP_Real>(real(MonCoeffsComplex[i]));
     std::cout << MonCoeffs[i] << std::endl;
   }
 

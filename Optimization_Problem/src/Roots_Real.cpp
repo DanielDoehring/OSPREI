@@ -273,9 +273,10 @@ bool Roots_Real::get_bounds_info(
      g_u[i] = 1.; // Actual stability bound
    }
 
-   if(ConsOrder >= 2) {
-      g_l[NumEigVals] = 0.;
-      g_u[NumEigVals] = 0.;
+   // Order constraints: Equality constraints
+   for ( Index i = NumEigVals; i < NumEigVals + ConsOrder - 1; i++ ) {
+      g_l[i] = 0.;
+      g_u[i] = 0.;
    }
 
    return true;
@@ -385,6 +386,13 @@ bool Roots_Real::eval_g(
             SecOrder(x, g, NumRoots, NumEigVals, HullRealScaled, HullImagScaled);
          else
             SecOrder(x, g, NumRoots, NumEigVals, RealEigValsScaled, ImagEigValsScaled);
+
+         if(ConsOrder >= 3) {
+            if(UseHull)
+               ThirdOrder(x, g, NumRoots, NumEigVals, HullRealScaled, HullImagScaled);
+            else
+               ThirdOrder(x, g, NumRoots, NumEigVals, RealEigValsScaled, ImagEigValsScaled);
+         }
       }
    }
    else {
@@ -406,6 +414,13 @@ bool Roots_Real::eval_g(
             SecOrder(x, g, NumRoots, NumEigVals, HullRealScaled, HullImagScaled, ImagDiff_over_RealDiff, i_min);
          else
             SecOrder(x, g, NumRoots, NumEigVals, RealEigValsScaled, ImagEigValsScaled, ImagDiff_over_RealDiff, i_min);
+
+         if(ConsOrder >= 3) {
+            if(UseHull)
+               ThirdOrder(x, g, NumRoots, NumEigVals, HullRealScaled, HullImagScaled, ImagDiff_over_RealDiff, i_min);
+            else
+               ThirdOrder(x, g, NumRoots, NumEigVals, RealEigValsScaled, ImagEigValsScaled, ImagDiff_over_RealDiff, i_min);
+         }
       }
    }
 
@@ -529,6 +544,35 @@ bool Roots_Real::eval_jac_g(
          for (size_t j = 0; j < NumUnknowns; j++) {
             values[ind] = dco::derivative(x_dco[j]);
             ind++;
+         }
+
+         if(ConsOrder >= 3) {
+            DCO_M::global_tape->zero_adjoints();
+
+            if(OddDegree) {
+               if(UseHull)
+                  ThirdOrder(x_dco, g, NumRoots, NumEigVals, HullRealScaled, HullImagScaled);
+               else
+                  ThirdOrder(x_dco, g, NumRoots, NumEigVals, RealEigValsScaled, ImagEigValsScaled);
+            }
+            else {
+               if(UseHull)
+                  ThirdOrder(x_dco, g, NumRoots, NumEigVals, HullRealScaled, HullImagScaled, 
+                           ImagDiff_over_RealDiff, i_min);
+               else
+                  ThirdOrder(x_dco, g, NumRoots, NumEigVals, RealEigValsScaled, ImagEigValsScaled, 
+                           ImagDiff_over_RealDiff, i_min);
+            }
+            
+            dco::derivative(g)[NumEigVals + 1] = 1.; // Seed component
+
+            DCO_M::global_tape->interpret_adjoint(); // Interpret (stored) tape
+
+            // Harvest
+            for (size_t j = 0; j < NumUnknowns; j++) {
+               values[ind] = dco::derivative(x_dco[j]);
+               ind++;
+            }
          }
       }
 
@@ -703,7 +747,7 @@ bool Roots_Real::eval_h(
          DCO_BM::global_tape->reset();
       }
 
-      /// Stability constraints ///
+      /// Order constraints ///
 
       if(ConsOrder >= 2) {
          for (size_t j = 0; j < NumUnknowns; j++) {
@@ -742,6 +786,46 @@ bool Roots_Real::eval_h(
             }
 
             DCO_BM::global_tape->zero_adjoints(); // Unseed
+         }
+
+         if(ConsOrder >= 3) {
+            for (size_t j = 0; j < NumUnknowns; j++) {
+               DCO_BM::global_tape->register_variable(dco::value(x_dco[j]) ); // record active input
+               DCO_BM::global_tape->register_variable(dco::derivative(x_dco[j]) ); // record active input
+
+               dco::value(dco::value(x_dco[j]) ) = x[j];
+
+               DCO_M::global_tape->register_variable(x_dco[j]);
+            }
+
+            if(OddDegree) {
+               if(UseHull)
+                  g = ThirdOrder(x_dco, NumRoots, HullRealScaled, HullImagScaled);
+               else
+                  g = ThirdOrder(x_dco, NumRoots, RealEigValsScaled, ImagEigValsScaled);
+            }
+            else {
+               if(UseHull)
+                  g = ThirdOrder(x_dco, NumRoots, HullRealScaled, HullImagScaled, ImagDiff_over_RealDiff, i_min);
+               else
+                  g = ThirdOrder(x_dco, NumRoots, RealEigValsScaled, ImagEigValsScaled, ImagDiff_over_RealDiff, i_min);
+            }
+
+            dco::value(dco::derivative(g) ) = 1.; // Seed
+            DCO_M::global_tape->interpret_adjoint(); // Back-propagate from output/adjoint
+
+            ind = 0;
+            for(size_t k = 0; k < NumUnknowns; k++) {
+               dco::derivative(dco::derivative(x_dco[k]) ) = 1.; // Seed
+
+               DCO_BM::global_tape->interpret_adjoint(); // Back-propagate from output/adjoint
+               for(size_t j = 0; j <= k; j++) {
+                  values[ind] += lambda[NumEigVals + 1] * dco::derivative(dco::value(x_dco[j]) );
+                  ind++;
+               }
+
+               DCO_BM::global_tape->zero_adjoints(); // Unseed
+            }
          }
       }
 
@@ -883,7 +967,7 @@ void Roots_Real::finalize_solution(
          std::cout << "g(" << i << ") = " << Constr[i] << std::endl;
    }
 
-   if(ConsOrder == 2) {   
+   if(ConsOrder >= 2) {   
       if(OddDegree) {
          if(UseHull)
             SecOrder(xMaxdt, Constr, NumRoots, NumEigVals, HullRealScaled, HullImagScaled);
@@ -899,6 +983,24 @@ void Roots_Real::finalize_solution(
                      ImagDiff_over_RealDiff, i_min);
       }
       std::cout << std::endl << "Final value of 2nd order constraint: " << Constr[NumEigVals] << std::endl;
+
+      if(ConsOrder >= 3) {   
+         if(OddDegree) {
+            if(UseHull)
+               ThirdOrder(xMaxdt, Constr, NumRoots, NumEigVals, HullRealScaled, HullImagScaled);
+            else
+               ThirdOrder(xMaxdt, Constr, NumRoots, NumEigVals, RealEigValsScaled, ImagEigValsScaled);
+            }
+         else {
+            if(UseHull)
+               ThirdOrder(xMaxdt, Constr, NumRoots, NumEigVals, HullRealScaled, HullImagScaled, 
+                          ImagDiff_over_RealDiff, i_min);
+            else
+               ThirdOrder(xMaxdt, Constr, NumRoots, NumEigVals, RealEigValsScaled, ImagEigValsScaled, 
+                          ImagDiff_over_RealDiff, i_min);
+         }
+         std::cout << "Final value of 3rd order constraint: " << Constr[NumEigVals+1] << std::endl;
+      }
    }
 
    /// Write to file section ///

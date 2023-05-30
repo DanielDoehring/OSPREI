@@ -23,8 +23,8 @@ int main(int argc, char** argv) {
    const int NumStagesRef = std::stoi(argv[3]);
    const Number dtRef     = std::stod(argv[4]);
 
-   // Currently only order 1 and 2 implemented
-   assert(ConsOrder == 1 || ConsOrder == 2);
+   // Currently only order 1 to 3 are implemented
+   assert(ConsOrder == 1 || ConsOrder == 2 || ConsOrder == 3);
 
    // Create a new instance of your nlp (use Ipopt::SmartPtr)
    SmartPtr<TNLP> mynlp;
@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
    app->Options()->SetStringValue("option_file_name", "Roots_Real.opt");
 
    if(ConsOrder == 1)
-      // There are no equality constraints => constant Eq.-Constr. Jacobian (not sure of option does something)
+      // There are no equality constraints => constant Eq.-Constr. Jacobian (not sure if option does something)
       app->Options()->SetStringValue("jac_c_constant", "yes");
 
    // Initialize the IpoptApplication and process the options
