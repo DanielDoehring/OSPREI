@@ -184,7 +184,9 @@ void ThirdOrder(const T* xy, T* g, const int NumRoots, const int NumEigVals,
     b1 = Lin_IntPol(xy[j], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[j + NumRoots];
     Radius1 = xy[j]*xy[j] + b1*b1;
 
-    for(size_t k = j+1; j < NumRoots; j++) {
+    g[NumEigVals+1] -= 0.25 / Radius1;
+
+    for(size_t k = j+1; k < NumRoots; k++) {
       b2 = Lin_IntPol(xy[k], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[k + NumRoots];
       Radius2 = xy[k]*xy[k] + b2*b2;
 
@@ -223,14 +225,16 @@ void ThirdOrder(const T* xy, T* g, const int NumRoots, const int NumEigVals,
     b1 = Lin_IntPol(xy[j], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[j + NumRoots];
     Radius1 = xy[j]*xy[j] + b1*b1;
 
-    for(size_t k = j+1; j < i_min; j++) {
+    g[NumEigVals+1] -= 0.25 / Radius1;
+
+    for(size_t k = j+1; k < i_min; k++) {
       b2 = Lin_IntPol(xy[k], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[k + NumRoots];
       Radius2 = xy[k]*xy[k] + b2*b2;
 
       g[NumEigVals+1] -= xy[j] * xy[k] / (Radius1 * Radius2);
     }
 
-    for(size_t k = i_min+1; j < NumRoots; j++) {
+    for(size_t k = i_min+1; k < NumRoots; k++) {
       b2 = Lin_IntPol(xy[k], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[k + NumRoots];
       Radius2 = xy[k]*xy[k] + b2*b2;
 
@@ -242,7 +246,9 @@ void ThirdOrder(const T* xy, T* g, const int NumRoots, const int NumEigVals,
     b1 = Lin_IntPol(xy[j], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[j + NumRoots];
     Radius1 = xy[j]*xy[j] + b1*b1;
 
-    for(size_t k = j+1; j < NumRoots; j++) {
+    g[NumEigVals+1] -= 0.25 / Radius1;
+
+    for(size_t k = j+1; k < NumRoots; k++) {
       b2 = Lin_IntPol(xy[k], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[k + NumRoots];
       Radius2 = xy[k]*xy[k] + b2*b2;
 
@@ -265,7 +271,9 @@ void ThirdOrder(const std::vector<T>& xy, std::vector<T>& g, const int NumRoots,
     b1 = Lin_IntPol(xy[j], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[j + NumRoots];
     Radius1 = xy[j]*xy[j] + b1*b1;
 
-    for(size_t k = j+1; j < NumRoots; j++) {
+    g[NumEigVals+1] -= 0.25 / Radius1;
+
+    for(size_t k = j+1; k < NumRoots; k++) {
       b2 = Lin_IntPol(xy[k], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[k + NumRoots];
       Radius2 = xy[k]*xy[k] + b2*b2;
 
@@ -304,14 +312,16 @@ void ThirdOrder(const std::vector<T>& xy, std::vector<T>& g, const int NumRoots,
     b1 = Lin_IntPol(xy[j], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[j + NumRoots];
     Radius1 = xy[j]*xy[j] + b1*b1;
 
-    for(size_t k = j+1; j < i_min; j++) {
+    g[NumEigVals+1] -= 0.25 / Radius1;
+
+    for(size_t k = j+1; k < i_min; k++) {
       b2 = Lin_IntPol(xy[k], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[k + NumRoots];
       Radius2 = xy[k]*xy[k] + b2*b2;
 
       g[NumEigVals+1] -= xy[j] * xy[k] / (Radius1 * Radius2);
     }
 
-    for(size_t k = i_min+1; j < NumRoots; j++) {
+    for(size_t k = i_min+1; k < NumRoots; k++) {
       b2 = Lin_IntPol(xy[k], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[k + NumRoots];
       Radius2 = xy[k]*xy[k] + b2*b2;
 
@@ -323,7 +333,9 @@ void ThirdOrder(const std::vector<T>& xy, std::vector<T>& g, const int NumRoots,
     b1 = Lin_IntPol(xy[j], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[j + NumRoots];
     Radius1 = xy[j]*xy[j] + b1*b1;
 
-    for(size_t k = j+1; j < NumRoots; j++) {
+    g[NumEigVals+1] -= 0.25 / Radius1;
+
+    for(size_t k = j+1; k < NumRoots; k++) {
       b2 = Lin_IntPol(xy[k], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[k + NumRoots];
       Radius2 = xy[k]*xy[k] + b2*b2;
 
@@ -346,7 +358,9 @@ T ThirdOrder(const std::vector<T>& xy, const int NumRoots,
     b1 = Lin_IntPol(xy[j], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[j + NumRoots];
     Radius1 = xy[j]*xy[j] + b1*b1;
 
-    for(size_t k = j+1; j < NumRoots; j++) {
+    g -= 0.25 / Radius1;
+
+    for(size_t k = j+1; k < NumRoots; k++) {
       b2 = Lin_IntPol(xy[k], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[k + NumRoots];
       Radius2 = xy[k]*xy[k] + b2*b2;
 
@@ -387,14 +401,16 @@ T ThirdOrder(const std::vector<T>& xy, const int NumRoots,
     b1 = Lin_IntPol(xy[j], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[j + NumRoots];
     Radius1 = xy[j]*xy[j] + b1*b1;
 
-    for(size_t k = j+1; j < i_min; j++) {
+    g -= 0.25 / Radius1;
+
+    for(size_t k = j+1; k < i_min; k++) {
       b2 = Lin_IntPol(xy[k], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[k + NumRoots];
       Radius2 = xy[k]*xy[k] + b2*b2;
 
       g -= xy[j] * xy[k] / (Radius1 * Radius2);
     }
 
-    for(size_t k = i_min+1; j < NumRoots; j++) {
+    for(size_t k = i_min+1; k < NumRoots; k++) {
       b2 = Lin_IntPol(xy[k], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[k + NumRoots];
       Radius2 = xy[k]*xy[k] + b2*b2;
 
@@ -406,7 +422,9 @@ T ThirdOrder(const std::vector<T>& xy, const int NumRoots,
     b1 = Lin_IntPol(xy[j], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[j + NumRoots];
     Radius1 = xy[j]*xy[j] + b1*b1;
 
-    for(size_t k = j+1; j < NumRoots; j++) {
+    g -= 0.25 / Radius1;
+
+    for(size_t k = j+1; k < NumRoots; k++) {
       b2 = Lin_IntPol(xy[k], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[k + NumRoots];
       Radius2 = xy[k]*xy[k] + b2*b2;
 
