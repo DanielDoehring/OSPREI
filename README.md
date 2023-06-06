@@ -1,5 +1,7 @@
 # OSPREI
 
+[![DOI](https://zenodo.org/badge/638126735.svg)](https://zenodo.org/badge/latestdoi/638126735)
+
 ```
       &     (/
   &&   &&    &
@@ -36,7 +38,7 @@
                                                                                       &&% &&%    /(
 ```
 
-Code for generation of **O**ptimal **S**tabiliy **P**olynomials in **R**oots for **E**xplicit time **I**ntegration.
+Code for generation of **O**ptimal **S**tabiliy **P**olynomials in **R**oots for **E**xplicit Time **I**ntegration.
 
 ## Dependencies
 
