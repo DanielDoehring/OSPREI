@@ -1,5 +1,7 @@
 # OSPREI
 
+[![DOI](https://zenodo.org/badge/638126735.svg)](https://zenodo.org/badge/latestdoi/638126735)
+
 ```
       &     (/
   &&   &&    &
@@ -70,5 +72,3 @@ Again, this is best seen in the examples.
 
 `Roots_Real.exe` looks for the parameter file `Roots_Real.opt` and `Roots_RealImag.exe` accordingly for `Roots_RealImag.opt` in the working directory.
 If none of these files is present, default `Ipopt` options are used.
-
-[![DOI](https://zenodo.org/badge/638126735.svg)](https://zenodo.org/badge/latestdoi/638126735)
