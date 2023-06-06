@@ -17,3 +17,5 @@ hessian_approximation limited-memory
 
 # Check derivatives computed via dco - in other words, show errors of finite differences ;-)
 #derivative_test second-order
+
+#jacobian_approximation finite-difference-values

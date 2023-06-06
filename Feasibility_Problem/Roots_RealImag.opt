@@ -1,4 +1,4 @@
-max_iter 2000
+max_iter 500
 
 # This is a feasibility problem
 grad_f_constant yes
