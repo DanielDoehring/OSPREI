@@ -36,7 +36,7 @@
 // 71 Digits:
 using MP_Real = boost::multiprecision::cpp_bin_float_oct;
 
-std::vector<MP_Real> ComputeCoeffs(const bool OddDegree, const int ConsOrder, const int NumStageEvals,
+std::vector<MP_Real> ComputeCoeffs(const bool OddDegree, const int ConsOrder, const int NumStages,
                                    const std::vector<double>& RootsReal, const std::vector<double>& RootsImag) {
 
   size_t NumRoots = 2 * RootsReal.size(); // True for Base Poly Odd Degree => Lower Degree Polynom Even Degree
@@ -95,8 +95,8 @@ std::vector<MP_Real> ComputeCoeffs(const bool OddDegree, const int ConsOrder, co
 
   // 'MonCoeffs' are the monomial coefficients of the lower degree polynomial
   // For higher than consistency order 1, we need to hand over only the relevant part
-  std::vector<MP_Real> MonCoeffs = std::vector<MP_Real>(NumStageEvals - ConsOrder);
-  for(size_t i = 0; i < NumStageEvals - ConsOrder; i++)
+  std::vector<MP_Real> MonCoeffs = std::vector<MP_Real>(NumStages);
+  for(size_t i = 0; i < NumStages; i++)
     MonCoeffs[i] = static_cast<MP_Real>(real(MonCoeffsComplex[i + ConsOrder]));
 
   return MonCoeffs;
@@ -244,10 +244,10 @@ void compute_a_coeffs(const int NumStages, const int NumStageEvals, const bool O
   std::cout << std::endl << "Multi-precision type has " 
             << std::numeric_limits<MP_Real>::digits10 << " (significant) digits" << std::endl;
 
-  const std::vector<MP_Real> MonCoeffs = ComputeCoeffs(OddDegree, ConsOrder, NumStageEvals, RootsReal, RootsImag);
+  const std::vector<MP_Real> MonCoeffs = ComputeCoeffs(OddDegree, ConsOrder, NumStages, RootsReal, RootsImag);
 
-  std::ofstream MC_file("gamma_" + std::to_string(NumStageEvals) + ".txt");
-  for(size_t i = 0; i < NumStageEvals - ConsOrder; i++) {
+  std::ofstream MC_file("gamma_" + std::to_string(NumStages) + ".txt");
+  for(size_t i = 0; i < NumStages; i++) {
     std::stringstream StringStr; // On purpose within loop (automatic reset)
     // Double precision
     //StringStr << std::setprecision(std::numeric_limits<Number>::max_digits10);
@@ -258,7 +258,7 @@ void compute_a_coeffs(const int NumStages, const int NumStageEvals, const bool O
     StringStr << MonCoeffs[i];
 
     MC_file << StringStr.str();
-    if(i != NumStageEvals - ConsOrder - 1)
+    if(i != NumStages - 1)
       MC_file << "\n";
   }
   MC_file.close();

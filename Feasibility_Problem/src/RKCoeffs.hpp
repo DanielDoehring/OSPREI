@@ -35,7 +35,7 @@
 // 71 Digits:
 using MP_Real = boost::multiprecision::cpp_bin_float_oct;
 
-std::vector<MP_Real> ComputeCoeffs(const bool OddDegree, const int ConsOrder, const int NumStageEvals, 
+std::vector<MP_Real> ComputeCoeffs(const bool OddDegree, const int ConsOrder, const int NumStages, 
                                    const std::vector<double>& RootsReal, const std::vector<double>& RootsImag) {
 
   /// Compute whole set of roots ///                                    
@@ -104,8 +104,8 @@ std::vector<MP_Real> ComputeCoeffs(const bool OddDegree, const int ConsOrder, co
   }
   */
 
-  std::vector<MP_Real> MonCoeffs = std::vector<MP_Real>(NumStageEvals);
-  for(size_t i = 0; i < NumStageEvals; i++) {
+  std::vector<MP_Real> MonCoeffs = std::vector<MP_Real>(NumStages);
+  for(size_t i = 0; i < NumStages; i++) {
     MonCoeffs[i] = static_cast<MP_Real>(real(MonCoeffsComplex[i]));
     //std::cout << MonCoeffs[i] << std::endl;
   }
@@ -257,10 +257,10 @@ void compute_a_coeffs(const int NumStages, const int NumStageEvals, const bool O
   std::cout << std::endl << "Multi-precision type has "
             << std::numeric_limits<MP_Real>::digits10 << " (significant) digits" << std::endl;
 
-  const std::vector<MP_Real> MonCoeffs = ComputeCoeffs(OddDegree, ConsOrder, NumStageEvals, RootsReal, RootsImag);
+  const std::vector<MP_Real> MonCoeffs = ComputeCoeffs(OddDegree, ConsOrder, NumStages, RootsReal, RootsImag);
   const std::string CoeffFileName = "MonCoeffs" + std::to_string(NumStageEvals) + ".txt";
   std::ofstream CoeffFile(CoeffFileName);
-  for(size_t i = 0; i < NumStageEvals - ConsOrder; i++) {
+  for(size_t i = 0; i < NumStageEvals; i++) {
     std::stringstream StringStr; // On purpose within loop (automatic reset)
 
     // Multi-precision
@@ -268,7 +268,7 @@ void compute_a_coeffs(const int NumStages, const int NumStageEvals, const bool O
     StringStr << MonCoeffs[i];
 
     CoeffFile << StringStr.str();
-    if(i != NumStageEvals - ConsOrder - 1)
+    if(i != NumStageEvals - 1)
       CoeffFile << "\n";
   }
   CoeffFile.close();
