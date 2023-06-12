@@ -1050,11 +1050,5 @@ void Roots_Real::finalize_solution(
          PseudoExtremaFile << "\n";
    }
    PseudoExtremaFile.close();
-
-   const std::string filename_Mathematica = PE_FileName + "Mathematica.txt";
-
-   // Make Mathematica compatible
-   const std::string command = "cat " + PE_FileName + ".txt" + " | sed 's/e-/*^-/g' | sed 's/e+/*^+/g' | sed 's/i/I/g' > " + filename_Mathematica;
-   system(command.c_str());
 }
 // [TNLP_finalize_solution]

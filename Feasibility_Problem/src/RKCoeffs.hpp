@@ -273,11 +273,6 @@ void compute_a_coeffs(const int NumStages, const int NumStageEvals, const bool O
   }
   CoeffFile.close();
 
-  // Make Mathematica compatible
-  const std::string CoeffFileNameMMA = "MonCoeffs" + std::to_string(NumStageEvals) + "MMA.txt";
-  const std::string command = "cat " + CoeffFileName + " | sed 's/e-/*^-/g' | sed 's/e+/*^+/g' > " + CoeffFileNameMMA;
-  assert(system(command.c_str()) == 0);
-
   //const std::vector<MP_Real> SE_Factors = Compute_SE_Factors(NumStages, NumStageEvals, ConsOrder);
   std::vector<MP_Real> SE_Factors = Compute_SE_Factors(NumStages, NumStageEvals, ConsOrder);
 
