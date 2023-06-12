@@ -38,7 +38,7 @@
                                                                                       &&% &&%    /(
 ```
 
-Code for generation of **O**ptimal **S**tabiliy **P**olynomials in **R**oots for **E**xplicit Time **I**ntegration.
+Code for generating **O**ptimal **S**tabiliy **P**olynomials in **R**oots for **E**xplicit Time **I**ntegration.
 
 ## Dependencies
 
