@@ -5,8 +5,8 @@
 // Authors:  Daniel Doehring                  RWTH Aachen University 2022-11-20
 
 
-#ifndef __COMPUTECOEFFS_HPP__
-#define __COMPUTECOEFFS_HPP__
+#ifndef __RKCOEFFS_HPP__
+#define __RKCOEFFS_HPP__
 
 #include <vector>
 #include <complex>
@@ -94,10 +94,9 @@ std::vector<MP_Real> ComputeCoeffs(const bool OddDegree, const int ConsOrder, co
   */
 
   // 'MonCoeffs' are the monomial coefficients of the lower degree polynomial
-  // For higher than consistency order 1, we need to hand over only the relevant part
   std::vector<MP_Real> MonCoeffs = std::vector<MP_Real>(NumStages);
   for(size_t i = 0; i < NumStages; i++)
-    MonCoeffs[i] = static_cast<MP_Real>(real(MonCoeffsComplex[i + ConsOrder]));
+    MonCoeffs[i] = static_cast<MP_Real>(real(MonCoeffsComplex[i]));
 
   return MonCoeffs;
 }
