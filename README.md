@@ -46,6 +46,7 @@ Code for generating **O**ptimal **S**tabiliy **P**olynomials in **R**oots for **
 For the linear solver only [`MUMPS`](https://github.com/coin-or-tools/ThirdParty-Mumps) has been applied both in combination with [`METIS`](https://github.com/KarypisLab/METIS) and without.
 * [`dco/c++`](https://www.nag.com/content/downloads-dco-c-versions) is used to compute the necessary derivatives algorithmically. `dco/c++` is proprietary software, but chances are that you can obtain an academic license if you are working in research.
 After obtaining `dco/c++` and licensing it, you need to change the path in the Makefiles (line 7) accordingly, i.e., `DCO_PATH=YOUR/PATH/TO/DCO`.
+* _Optional_: If you want to compute also the monomial coefficients of the stability polynomial the usage of higher precision datatypes is necessary, where I resort to the implementation by [`Boost`](https://github.com/boostorg/multiprecision).
 
 ## Building
 After obtaining and licensing the dependencies, execute in both directories `Feasibility_Problem` and `Optimization_Problem` 
