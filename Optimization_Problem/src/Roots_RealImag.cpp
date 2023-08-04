@@ -1036,9 +1036,7 @@ void Roots_RealImag::finalize_solution(
     TrueComplexFile.close();
 
    // Make P-ERK ready
-   /*
    compute_a_coeffs(NumStages, NumStages, OddDegree, ConsOrder, Reals, Imags, 
                     NumEigVals, RealEigValsScaled, ImagEigValsScaled, xy[n-1], dtExp);
-   */
 }
 // [TNLP_finalize_solution]

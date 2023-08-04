@@ -262,9 +262,10 @@ void compute_a_coeffs(const int NumStages, const int NumStageEvals, const bool O
   }
   MC_file.close();
 
+  /*
   const std::vector<MP_Real> SE_Factors = Compute_SE_Factors(NumStages, NumStageEvals, ConsOrder);
 
-  std::vector<MP_Real> a_MP(MonCoeffs);
+  std::vector<MP_Real> a_MP = std::vector<MP_Real>(MonCoeffs.begin() + ConsOrder, MonCoeffs.end());
   for(size_t i = 0; i < NumStageEvals - ConsOrder; i++) {
     a_MP[i] /= SE_Factors[i];
     // Stabilized version:
@@ -277,18 +278,23 @@ void compute_a_coeffs(const int NumStages, const int NumStageEvals, const bool O
   }
 
   // Sanity check: Re-compute gamma from a
-  /*
+  std::cout << "Sanity check: Re-compute gamma from a" << std::endl << std::endl;
   MP_Real temp;
   for(size_t i = 0; i < NumStageEvals - ConsOrder; i++) {
-    temp = a_MP[i] * SE_Factors[i] * std::pow(NumStageEvals, ConsOrder);
+    // Stabilized version
+    //temp = a_MP[i] * SE_Factors[i] * std::pow(NumStageEvals, ConsOrder);
+
+    temp = a_MP[i] * SE_Factors[i];
     for(size_t j = 0; j < i; j++) {
-      temp *= a_MP[j] * NumStageEvals;
+      // Stabilized version
+      //temp *= a_MP[j] * NumStageEvals;
+
+      temp *= a_MP[j];
     }
     std::cout << temp << std::endl;
   }
-  */
 
-  /*
+  
   std::cout << std::endl << "Checking stab. constr. computed from a-coeffs in Multiprecision " << std::endl << std::endl;
   CheckStability(NumStages, NumStageEvals, ConsOrder, a_MP, SE_Factors, NumEigVals, 
                  RealEigValsScaled, ImagEigValsScaled, dt/dtExp);

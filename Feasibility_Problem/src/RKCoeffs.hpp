@@ -276,7 +276,7 @@ void compute_a_coeffs(const int NumStages, const int NumStageEvals, const bool O
   //const std::vector<MP_Real> SE_Factors = Compute_SE_Factors(NumStages, NumStageEvals, ConsOrder);
   std::vector<MP_Real> SE_Factors = Compute_SE_Factors(NumStages, NumStageEvals, ConsOrder);
 
-  std::vector<MP_Real> a_MP(MonCoeffs);
+  std::vector<MP_Real> a_MP = std::vector<MP_Real>(MonCoeffs.begin() + ConsOrder, MonCoeffs.end());
   for(size_t i = 0; i < NumStageEvals - ConsOrder; i++) {
     a_MP[i] /= SE_Factors[i];
     
