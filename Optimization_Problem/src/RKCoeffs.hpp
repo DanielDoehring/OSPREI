@@ -23,7 +23,7 @@
 #include <boost/multiprecision/cpp_bin_float.hpp> // For quad, oct precision
 
 #include <fstream>
-#include <iostream> 
+#include <iostream>
 
 //using MP_Real = boost::multiprecision::number<boost::multiprecision::cpp_dec_float<71>>;
 //using MP_Real = boost::multiprecision::cpp_dec_float_100;
@@ -69,6 +69,7 @@ std::vector<MP_Real> ComputeCoeffs(const bool OddDegree, const int ConsOrder, co
     }
   }
 
+  // Initialize polynomial with 1
   std::vector<std::complex<MP_Real>> MonCoeffsComplex{std::complex<MP_Real>(1., 0.)};
   for(size_t i = 0; i < NumRoots; i++) {
     std::vector<std::complex<MP_Real>> temp{MonCoeffsComplex.begin(), MonCoeffsComplex.end()};
@@ -144,13 +145,13 @@ void CheckStability(const int NumStages, const int NumStageEvals, const int Cons
                     const std::vector<float_type>& a, const std::vector<float_type>& SE_Factors,
                     const int NumEigVals,
                     const std::vector<double>& RealEigValsScaled, const std::vector<double>& ImagEigValsScaled,
-                    const double dt) {
+                    const double dtScaling) {
 
   std::cout << std::setprecision(std::numeric_limits<float_type>::digits10);
   std::complex<float_type> z, z_power, StabPnom;
   float_type AbsDet;
   for(size_t i = 0; i < NumEigVals; i++) {
-    z = std::complex<float_type>(RealEigValsScaled[i]*dt, ImagEigValsScaled[i]*dt);
+    z = std::complex<float_type>(RealEigValsScaled[i]*dtScaling, ImagEigValsScaled[i]*dtScaling);
 
     StabPnom = std::complex<float_type>(1., 0.) + z;
     z_power = z;
@@ -176,17 +177,18 @@ void CheckStability(const int NumStages, const int NumStageEvals, const int Cons
   }
 }
 
-double MaxAbsPnom(const int NumStages, const int NumStageEvals, const int ConsOrder,
-                  const std::vector<double>& a, const std::vector<double>& SE_Factors,
-                  const int NumEigVals,
-                  const std::vector<double>& RealEigValsScaled, const std::vector<double>& ImagEigValsScaled,
-                  const double dtScaling) {
-  std::complex<double> z, z_power, StabPnom;
-  double AbsDet, AbsDetMax = 0.;
+template<typename float_type>
+float_type MaxAbsPnom(const int NumStages, const int NumStageEvals, const int ConsOrder,
+                      const std::vector<float_type>& a, const std::vector<float_type>& SE_Factors,
+                      const int NumEigVals,
+                      const std::vector<double>& RealEigValsScaled, const std::vector<double>& ImagEigValsScaled,
+                      const float_type dtScaling) {
+  std::complex<float_type> z, z_power, StabPnom;
+  float_type AbsDet, AbsDetMax = 0.;
   for(size_t i = 0; i < NumEigVals; i++) {
-    z = std::complex<double>(RealEigValsScaled[i] * dtScaling, ImagEigValsScaled[i] * dtScaling);
+    z = std::complex<float_type>(RealEigValsScaled[i] * dtScaling, ImagEigValsScaled[i] * dtScaling);
 
-    StabPnom = std::complex<double>(1., 0.) + z;
+    StabPnom = std::complex<float_type>(1., 0.) + z;
     z_power = z;
     for (size_t i = 2; i <= ConsOrder; i++) {
       z_power *= z;
@@ -208,16 +210,17 @@ double MaxAbsPnom(const int NumStages, const int NumStageEvals, const int ConsOr
   return AbsDetMax;
 }
 
-double FindMaxTimeStep(const int NumStages, const int NumStageEvals, const int ConsOrder,
-                       const std::vector<double>& a, const std::vector<double>& SE_Factors,
-                       const int NumEigVals,
-                       const std::vector<double>& RealEigValsScaled, const std::vector<double>& ImagEigValsScaled) {
+template<typename float_type>
+float_type FindMaxTimeStep(const int NumStages, const int NumStageEvals, const int ConsOrder,
+                           const std::vector<float_type>& a, const std::vector<float_type>& SE_Factors,
+                           const int NumEigVals,
+                           const std::vector<double>& RealEigValsScaled, const std::vector<double>& ImagEigValsScaled) {
   
-  double dtScalMax = 1.;
-  double dtScalMin = 0.;
+  float_type dtScalMax = 1.;
+  float_type dtScalMin = 0.;
   const double dtScalEps = 1e-12;
 
-  double Violation, dtScaling;
+  float_type Violation, dtScaling;
   while(dtScalMax - dtScalMin > dtScalEps) {
     dtScaling = 0.5 * (dtScalMax + dtScalMin);
     Violation = MaxAbsPnom(NumStages, NumStageEvals, ConsOrder, a, SE_Factors, NumEigVals, 
@@ -299,6 +302,12 @@ void compute_a_coeffs(const int NumStages, const int NumStageEvals, const bool O
   CheckStability(NumStages, NumStageEvals, ConsOrder, a_MP, SE_Factors, NumEigVals, 
                  RealEigValsScaled, ImagEigValsScaled, dt/dtExp);
 
+  const MP_Real dtScaling_MP = FindMaxTimeStep(NumStages, NumStageEvals, ConsOrder, a_MP, SE_Factors, NumEigVals, 
+                                               RealEigValsScaled, ImagEigValsScaled);                 
+
+  std::cout << std::endl << "In theory optimal timestep degenerates to: " << dtScaling_MP 
+            << " of desired value, i.e., " << dtExp * dtScaling_MP  << std::endl;
+
   // Conversion from MP to double
   std::vector<double> a_DBL(a_MP.begin(), a_MP.end());
   std::vector<double> SE_Factors_DBL(SE_Factors.begin(), SE_Factors.end());
@@ -307,11 +316,10 @@ void compute_a_coeffs(const int NumStages, const int NumStageEvals, const bool O
   CheckStability(NumStages, NumStageEvals, ConsOrder, a_DBL, SE_Factors_DBL, NumEigVals, 
                  RealEigValsScaled, ImagEigValsScaled, dt/dtExp);
   
-
   const double dtScaling = FindMaxTimeStep(NumStages, NumStageEvals, ConsOrder, a_DBL, SE_Factors_DBL, NumEigVals, 
                                            RealEigValsScaled, ImagEigValsScaled);
   std::cout << std::endl << "In theory optimal timestep degenerates to: " << dtScaling 
-            << " of desired value, i.e., " << dt * dtScaling  << std::endl;
+            << " of desired value, i.e., " << dtExp * dtScaling  << std::endl;
   
 
   // Need to flip coefficients since we compute the higher ones first
