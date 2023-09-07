@@ -909,7 +909,7 @@ void Roots_RealImag::finalize_solution(
 
    std::cout << std::endl << "Final value of violating eigenvalue constraints:" << std::endl;
    for( Index i = 0; i < NumEigVals; i++ )
-      if(g[i] >= 1.)
+      if(g[i] > 1.)
          std::cout << "g(" << i << ") = " << g[i] << std::endl
                    << "with violation " << g[i] - 1. << std::endl  << std::endl;
 
