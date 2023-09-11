@@ -26,14 +26,18 @@
 
 //using MP_Real = boost::multiprecision::number<boost::multiprecision::cpp_dec_float<42>>;
 //using MP_Real = boost::multiprecision::cpp_dec_float_100;
+
+// 16 Digits (for sanity check only)
+//using MP_Real = double;
+
 // 18 Digits
 //using MP_Real = long double;
 
 // 33 Digits:
-//using MP_Real = boost::multiprecision::cpp_bin_float_quad;
+using MP_Real = boost::multiprecision::cpp_bin_float_quad;
 
 // 71 Digits:
-using MP_Real = boost::multiprecision::cpp_bin_float_oct;
+//using MP_Real = boost::multiprecision::cpp_bin_float_oct;
 
 std::vector<MP_Real> ComputeCoeffs(const bool OddDegree, const int ConsOrder, const int NumStages, 
                                    const std::vector<double>& RootsReal, const std::vector<double>& RootsImag) {
@@ -59,13 +63,13 @@ std::vector<MP_Real> ComputeCoeffs(const bool OddDegree, const int ConsOrder, co
     Roots[0] = std::complex<MP_Real>(RootsReal[i_min], 0.);
 
     for(size_t i = 0; i < i_min; i++) {
-      Roots[i+1]                = std::complex<MP_Real>(RootsReal[i],  RootsImag[i]);
-      Roots[i+RootsReal.size()] = std::complex<MP_Real>(RootsReal[i], -RootsImag[i]);
+      Roots[2*i+1] = std::complex<MP_Real>(RootsReal[i],  RootsImag[i]);
+      Roots[2*i+2] = std::complex<MP_Real>(RootsReal[i], -RootsImag[i]);
     }
 
     for(size_t i = i_min + 1; i < RootsReal.size(); i++) {
-      Roots[i]                      = std::complex<MP_Real>(RootsReal[i],  RootsImag[i]);
-      Roots[i+RootsReal.size() - 1] = std::complex<MP_Real>(RootsReal[i], -RootsImag[i]);
+      Roots[2*i-1] = std::complex<MP_Real>(RootsReal[i],  RootsImag[i]);
+      Roots[2*i]   = std::complex<MP_Real>(RootsReal[i], -RootsImag[i]);
     }
   }
 
@@ -84,6 +88,12 @@ std::vector<MP_Real> ComputeCoeffs(const bool OddDegree, const int ConsOrder, co
     for(size_t j = 1; j < MonCoeffsComplex.size(); j++) {
       MonCoeffsComplex[j] += temp[j-1];
     }
+
+        // Truncate to real after each complex-conjugated pair (Note: Works only for even-degree!)
+    if(i % 2 == 0 && !OddDegree)
+      for(size_t j = 1 ; j < MonCoeffsComplex.size(); j++) {
+        MonCoeffsComplex[j] = std::complex<MP_Real>(MonCoeffsComplex[j].real(), 0.0);
+      }
   }
 
   /*
@@ -94,23 +104,11 @@ std::vector<MP_Real> ComputeCoeffs(const bool OddDegree, const int ConsOrder, co
   }
   */
 
-  // 'MonCoeffs' are the monomial coefficients of the lower degree polynomial
-  // For higher than consistency order 1, we need to hand over only the relevant part
-  /*
-  std::vector<MP_Real> MonCoeffs = std::vector<MP_Real>(NumStageEvals - ConsOrder);
-  for(size_t i = 0; i < NumStageEvals - ConsOrder; i++) {
-    MonCoeffs[i] = static_cast<MP_Real>(real(MonCoeffsComplex[i + ConsOrder]));
-    std::cout << MonCoeffs[i] << std::endl;
-  }
-  */
-
   std::vector<MP_Real> MonCoeffs = std::vector<MP_Real>(NumStages);
   for(size_t i = 0; i < NumStages; i++) {
     MonCoeffs[i] = static_cast<MP_Real>(real(MonCoeffsComplex[i]));
     //std::cout << MonCoeffs[i] << std::endl;
   }
-
-  //std::cout << "Smallest coefficient is (order only of interest): " << MonCoeffs[NumStageEvals - ConsOrder - 1] << std::endl;
 
   return MonCoeffs;
 }
@@ -118,11 +116,11 @@ std::vector<MP_Real> ComputeCoeffs(const bool OddDegree, const int ConsOrder, co
 // Compute SE Factors based on observation
 std::vector<MP_Real> Compute_SE_Factors(const int NumStages, const int NumStageEvals, const int ConsOrder) {
   
-  std::vector<MP_Real> c(NumStages); // IDEA: Use rational datatype for this?
+  std::vector<MP_Real> c(NumStages);
   for(size_t i = 0; i < NumStages; i++)
-    c[i] = i / (2. * (NumStages - 1));
+    c[i] = i / (static_cast<MP_Real>(2.0) * (NumStages - 1));
 
-  std::vector<MP_Real> SE_Factors(NumStageEvals - ConsOrder); // IDEA: Use rational datatype for this?
+  std::vector<MP_Real> SE_Factors(NumStageEvals - ConsOrder);
   for(size_t i = 0; i < NumStageEvals - ConsOrder; i++) {
     SE_Factors[i] = c[NumStages - i - 2];
   }
@@ -151,6 +149,43 @@ inline float_type factorial(const size_t n, const std::vector<float_type>& TellC
   for(int i = 1; i <= n; i++)
     res *= i;
   return res;
+}
+
+template<typename float_type>
+void CheckStability(const int NumStages, const int NumStageEvals, const int ConsOrder,
+                    const std::vector<float_type>& MonCoeffs,
+                    const std::vector<float_type>& a, const std::vector<float_type>& SE_Factors,
+                    const int NumEigVals,
+                    const std::vector<double>& RealEigValsScaled, const std::vector<double>& ImagEigValsScaled) {
+
+  std::cout << std::setprecision(std::numeric_limits<float_type>::digits10);
+  std::complex<float_type> z, z_power, StabPnom;
+  float_type AbsDet;
+  for(size_t i = 0; i < NumEigVals; i++) {
+    z = std::complex<float_type>(RealEigValsScaled[i], ImagEigValsScaled[i]);
+
+    StabPnom = std::complex<float_type>(1., 0.) + z;
+    z_power = z;
+    for (size_t i = 2; i <= ConsOrder; i++) {
+      z_power *= z;
+      StabPnom += z_power * MonCoeffs[i-1];
+    }
+
+    for (size_t i = ConsOrder + 1; i <= NumStageEvals; i++) {
+      z_power *= z * a[i - (ConsOrder + 1)];
+      StabPnom += z_power * SE_Factors[i-(ConsOrder + 1)];
+      /*
+      std::cout << z << std::endl << z_power << std::endl << a[i - (ConsOrder + 1)] << std::endl 
+                << SE_Factors[i-(ConsOrder + 1)] << std::endl << std::endl;
+      */
+    }
+
+    //AbsDet = std::abs(AbsDet); // Does not compile => Manual implementation
+    AbsDet = sqrt(real(StabPnom)*real(StabPnom) + imag(StabPnom)*imag(StabPnom)); // Seems to be the right thing
+    if(AbsDet > static_cast<float_type>(1.))
+      std::cout << i <<"'th eigenvalue violates constraint with stability polynomial value: "
+                << std::endl << AbsDet << std::endl << std::endl;
+  }
 }
 
 template<typename float_type>
@@ -191,6 +226,40 @@ void CheckStability(const int NumStages, const int NumStageEvals, const int Cons
   std::cout << "AbsDetMax: " << AbsDetMax << std::endl << std::endl;
 }
 
+template<typename float_type>
+float_type MaxAbsPnom(const int NumStages, const int NumStageEvals, const int ConsOrder,
+                      const std::vector<float_type>& MonCoeffs,
+                      const std::vector<float_type>& a, const std::vector<float_type>& SE_Factors,
+                      const int NumEigVals,
+                      const std::vector<double>& RealEigValsScaled, const std::vector<double>& ImagEigValsScaled,
+                      const double dtScaling) {
+  std::complex<float_type> z, z_power, StabPnom;
+  float_type AbsDet, AbsDetMax = 0.;
+  for(size_t i = 0; i < NumEigVals; i++) {
+    z = std::complex<float_type>(RealEigValsScaled[i], ImagEigValsScaled[i]);
+
+    StabPnom = std::complex<float_type>(1., 0.) + z;
+    z_power = z;
+    for (size_t i = 2; i <= ConsOrder; i++) {
+      z_power *= z;
+      StabPnom += z_power * MonCoeffs[i-1];
+    }
+
+    for (size_t i = ConsOrder + 1; i <= NumStageEvals; i++) {
+      z_power *= z * a[i - (ConsOrder + 1)];
+
+      StabPnom += z_power * SE_Factors[i-(ConsOrder + 1)];
+    }
+
+    //AbsDet = std::abs(AbsDet); // Does not compile => Manual implementation
+    AbsDet = sqrt(real(StabPnom)*real(StabPnom) + imag(StabPnom)*imag(StabPnom)); // Seems to be the right thing
+    if(AbsDet > AbsDetMax)
+      AbsDetMax = AbsDet;
+  }
+
+  return AbsDetMax;
+}
+
 double MaxAbsPnom(const int NumStages, const int NumStageEvals, const int ConsOrder,
                   const std::vector<double>& a, const std::vector<double>& SE_Factors,
                   const int NumEigVals,
@@ -223,13 +292,47 @@ double MaxAbsPnom(const int NumStages, const int NumStageEvals, const int ConsOr
   return AbsDetMax;
 }
 
+/* NOTE: Seems unreliable, i.e., assumption of monotonicity in timestep as taken in 
+   https://msp.org/camcos/2012/7-2/p04.xhtml 
+   is not observed in practice!
+*/
+template<typename float_type>
+float_type FindMaxTimeStep(const int NumStages, const int NumStageEvals, const int ConsOrder,
+                           const std::vector<float_type>& MonCoeffs,
+                           const std::vector<float_type>& a, const std::vector<float_type>& SE_Factors,
+                           const int NumEigVals,
+                           const std::vector<double>& RealEigValsScaled, const std::vector<double>& ImagEigValsScaled) {
+  
+  float_type dtScalMax = 1.0; // Suffering from non-monotonicity
+  float_type dtScalMin = 0.;
+  const double dtScalEps = 1e-12;
+
+  float_type Violation, dtScaling;
+  while(dtScalMax - dtScalMin > dtScalEps) {
+    dtScaling = 0.5 * (dtScalMax + dtScalMin);
+    Violation = MaxAbsPnom(NumStages, NumStageEvals, ConsOrder, MonCoeffs, a, SE_Factors, 
+                           NumEigVals, RealEigValsScaled, ImagEigValsScaled, dtScaling);
+
+    if(Violation < static_cast<float_type>(1.0))
+      dtScalMin = dtScaling;
+    else
+      dtScalMax = dtScaling;
+  } 
+
+  return dtScalMin; // Use conservative value (minimum)
+}
+
+/* NOTE: Seems unreliable, i.e., assumption of monotonicity in timestep as taken in 
+   https://msp.org/camcos/2012/7-2/p04.xhtml 
+   is not observed in practice!
+*/
 double FindMaxTimeStep(const int NumStages, const int NumStageEvals, const int ConsOrder,
                        const std::vector<double>& a, const std::vector<double>& SE_Factors,
                        const int NumEigVals,
                        const std::vector<double>& RealEigValsScaled, const std::vector<double>& ImagEigValsScaled) {
   double dtScalMax = 1.;
   double dtScalMin = 0.;
-  const double dtScalEps = 1e-14;
+  const double dtScalEps = 1e-12;
 
   double Violation, dtScaling;
   while(dtScalMax - dtScalMin > dtScalEps) {

@@ -90,8 +90,8 @@ std::vector<MP_Real> ComputeCoeffs(const bool OddDegree, const int ConsOrder, co
       MonCoeffsComplex[j] += temp[j-1];
     }
 
-    // Truncate to real after each complex-conjugated pair
-    if(i % 2 == 0)
+    // Truncate to real after each complex-conjugated pair (Note: Works only for even-degree!)
+    if(i % 2 == 0 && !OddDegree)
       for(size_t j = 1 ; j < MonCoeffsComplex.size(); j++) {
         MonCoeffsComplex[j] = std::complex<MP_Real>(MonCoeffsComplex[j].real(), 0.0);
       }
