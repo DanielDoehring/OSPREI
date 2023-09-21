@@ -44,6 +44,7 @@ Roots_Real::Roots_Real(
 
   NumEigVals = -1;
   read_EigVals(EigValFileName, NumEigVals, RealEigValsScaled, ImagEigValsScaled);
+  // TODO: This assumes that the eigenvalues are sorted ascending with real part -> Implement sorting!
 
   for(size_t i = 0; i < NumEigVals; i++) {
     RealEigValsScaled[i] *= dtExp;
