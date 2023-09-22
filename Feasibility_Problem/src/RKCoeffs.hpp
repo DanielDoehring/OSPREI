@@ -222,8 +222,10 @@ void CheckStability(const int NumStages, const int NumStageEvals, const int Cons
                 << std::endl << AbsDet << std::endl << std::endl;
   }
 
+  /*
   std::cout << std::setprecision(std::numeric_limits<double>::digits10);
   std::cout << "AbsDetMax: " << AbsDetMax << std::endl << std::endl;
+  */
 }
 
 template<typename float_type>
@@ -393,6 +395,7 @@ void compute_a_coeffs(const int NumStages, const int NumStageEvals, const bool O
     }
   }
 
+  /*
   // Sanity check: Re-compute gamma from a
   std::cout << std::endl << "Sanity check: Re-compute gamma from a_MP" << std::endl << std::endl;
   MP_Real temp;
@@ -409,6 +412,7 @@ void compute_a_coeffs(const int NumStages, const int NumStageEvals, const bool O
     }
     std::cout << temp << std::endl;
   }
+  */
 
   // Conversion from MP to double
   std::vector<double> a_DBL(a_MP.begin(), a_MP.end());
@@ -431,7 +435,7 @@ void compute_a_coeffs(const int NumStages, const int NumStageEvals, const bool O
     std::cout << temp_DBL << std::endl;
   }
 
-  /*
+  
   std::cout << std::endl << "Checking stab. constr. computed from a-coeffs in Multiprecision " << std::endl << std::endl;
   CheckStability(NumStages, NumStageEvals, ConsOrder, a_MP, SE_Factors, NumEigVals, RealEigValsScaled, ImagEigValsScaled);
 
@@ -442,7 +446,7 @@ void compute_a_coeffs(const int NumStages, const int NumStageEvals, const bool O
                                            NumEigVals, RealEigValsScaled, ImagEigValsScaled);
   std::cout << std::endl << "In theory optimal timestep degenerates to: " << dtScaling
             << " of desired value, i.e., " << dtExp * dtScaling  << std::endl;
-  */
+  
 
   // Need to flip coefficients since we compute the higher ones first
   std::reverse(a_MP.begin(), a_MP.end());
