@@ -50,6 +50,25 @@ void read_EigVals(const std::string EigValFileName, int& NumEigVals,
     i++;
   }
   EigValsFile.close();
+  
+  // Sort eigenvalues with asceding real part
+  std::vector<int> index(RealEigVals.size(), 0);
+  for (int i = 0 ; i != index.size() ; i++) {
+    index[i] = i;
+  }
+  std::sort(index.begin(), index.end(),
+      [&](const int& a, const int& b) {
+          return (RealEigVals[a] < RealEigVals[b]);
+      }
+  );
+
+  std::vector<T> RealEigVals_unsorted = RealEigVals;
+  std::vector<T> ImagEigVals_unsorted = ImagEigVals;
+
+  for (int i = 0 ; i != index.size() ; i++) {
+    RealEigVals[i] = RealEigVals_unsorted[index[i]];
+    ImagEigVals[i] = ImagEigVals_unsorted[index[i]];
+  }
 }
 
 template <typename T>
