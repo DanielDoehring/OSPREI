@@ -38,7 +38,7 @@
                                                                                       &&% &&%    /(
 ```
 
-Code for generating **O**ptimal **S**tabiliy **P**olynomials in **R**oots for **E**xplicit Time **I**ntegration.
+Code for generating **O**ptimal **S**tability **P**olynomials in **R**oots for **E**xplicit Time **I**ntegration.
 
 ## Dependencies
 
@@ -73,3 +73,9 @@ Again, this is best seen in the examples.
 
 `Roots_Real.exe` looks for the parameter file `Roots_Real.opt` and `Roots_RealImag.exe` accordingly for `Roots_RealImag.opt` in the working directory.
 If none of these files is present, default `Ipopt` options are used.
+
+## Acknowledgements
+
+This project has benefited from funding by the Deutsche Forschungsgemeinschaft (DFG, German Research Foundation)
+through the research unit FOR 5409 "Structure-Preserving Numerical Methods for Bulk- and
+Interface Coupling of Heterogeneous Models (SNuBIC)" (project number 463312734).
