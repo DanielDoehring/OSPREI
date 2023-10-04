@@ -75,6 +75,7 @@ Again, this is best seen in the examples.
 If none of these files is present, default `Ipopt` options are used.
 
 ## Acknowledgements
+![DFG](https://github.com/DanielDoehring/OSPREI/assets/75639095/a0ebb057-a0c5-4dc9-96df-03ac74894d2a)
 
 This project has benefited from funding by the Deutsche Forschungsgemeinschaft (DFG, German Research Foundation)
 through the research unit FOR 5409 "Structure-Preserving Numerical Methods for Bulk- and
