@@ -448,15 +448,4 @@ T ThirdOrder(const std::vector<T>& x, const int NumRoots,
   return g;
 }
 
-
-/// Fourth ORDER ///
-
-// For Odd Base Polynom => Even Lower Degree Polynomial
-template <typename T>
-void FourthOrder(const T* x, T* g, const int NumRoots, const int NumEigVals,
-                 const std::vector<T>& RealRange, const std::vector<T>& ImagRange,
-                 const std::vector<T>& ImagDiff_over_RealDiff)
-{
-  
-}
 #endif
