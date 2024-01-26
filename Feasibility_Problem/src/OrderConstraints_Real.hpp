@@ -22,9 +22,9 @@ Since we have that for complex-conjugated roots 1/r + 1/r* = 2 * Re(r)/Radius(r)
 
 For third order, we demand 1/6 = sum_{i,j i != j}^S 1/(r_i r_j)
 For complex conjugated roots we have 
-1/(r_i r_j) + 1/(r_i r_j*) + 1/(r_i* r_j) + 1/(r_i* r_j*) 
-= 4 * Re(r_i) * Re(r_j) / (Radius(r_i)^2 + Radius(r_j)^2)
-=> 1.0/24.0 = sum_{i,j i != j}^(S/2) Re(r_i) * Re(r_j) / (Radius(r_i)^2 + Radius(r_j)^2)
+1/(r_i r_i*) + 1/(r_i r_j) + 1/(r_i r_j*) + 1/(r_i* r_j) + 1/(r_i* r_j*)
+= 1/Radius(r_i) + 4 * Re(r_i) * Re(r_j) / (Radius(r_i)^2 + Radius(r_j)^2)
+=> 1.0/24.0 = sum_{i,j i != j}^(S/2) 0.25/Radius(r_i) +  Re(r_i) * Re(r_j) / (Radius(r_i)^2 + Radius(r_j)^2)
 
 */
 
@@ -58,6 +58,7 @@ void SecOrder(const T* x, T* g, const int NumRoots, const int NumEigVals,
 
   T b, Radius;
 
+  // Single purely real root
   g[NumEigVals] += 0.5/x[i_min];
 
   for(size_t j = 0; j < i_min; j++) {
@@ -103,6 +104,7 @@ void SecOrder(const std::vector<T>& x, std::vector<T>& g, const int NumRoots, co
 
   T b, Radius;
   
+  // Single purely real root
   g[NumEigVals] += 0.5/x[i_min];
 
   for(size_t j = 0; j < i_min; j++) {
@@ -149,6 +151,7 @@ T SecOrder(const std::vector<T>& x, const int NumRoots,
 
   T b, Radius;
 
+  // Single purely real root
   g += 0.5/x[i_min];
 
   for(size_t j = 0; j < i_min; j++) {
@@ -185,6 +188,7 @@ void ThirdOrder(const T* x, T* g, const int NumRoots, const int NumEigVals,
     b1 = Lin_IntPol(x[j], RealRange, ImagRange, ImagDiff_over_RealDiff);
     Radius1 = x[j]*x[j] + b1*b1;
 
+    // 1/(r_j r_j*) = 1/Radius(r_j)
     g[NumEigVals+1] -= 0.25 / Radius1;
 
     for(size_t k = j+1; k < NumRoots; k++) {
@@ -226,6 +230,7 @@ void ThirdOrder(const T* x, T* g, const int NumRoots, const int NumEigVals,
     b1 = Lin_IntPol(x[j], RealRange, ImagRange, ImagDiff_over_RealDiff);
     Radius1 = x[j]*x[j] + b1*b1;
 
+    // 1/(r_j r_j*) = 1/Radius(r_j)
     g[NumEigVals+1] -= 0.25 / Radius1;
 
     for(size_t k = j+1; k < i_min; k++) {
@@ -247,6 +252,7 @@ void ThirdOrder(const T* x, T* g, const int NumRoots, const int NumEigVals,
     b1 = Lin_IntPol(x[j], RealRange, ImagRange, ImagDiff_over_RealDiff);
     Radius1 = x[j]*x[j] + b1*b1;
 
+    // 1/(r_j r_j*) = 1/Radius(r_j)
     g[NumEigVals+1] -= 0.25 / Radius1;
 
     for(size_t k = j+1; k < NumRoots; k++) {
@@ -272,6 +278,7 @@ void ThirdOrder(const std::vector<T>& x, std::vector<T>& g, const int NumRoots, 
     b1 = Lin_IntPol(x[j], RealRange, ImagRange, ImagDiff_over_RealDiff);
     Radius1 = x[j]*x[j] + b1*b1;
 
+    // 1/(r_j r_j*) = 1/Radius(r_j)
     g[NumEigVals+1] -= 0.25 / Radius1;
 
     for(size_t k = j+1; k < NumRoots; k++) {
@@ -313,6 +320,7 @@ void ThirdOrder(const std::vector<T>& x, std::vector<T>& g, const int NumRoots, 
     b1 = Lin_IntPol(x[j], RealRange, ImagRange, ImagDiff_over_RealDiff);
     Radius1 = x[j]*x[j] + b1*b1;
 
+    // 1/(r_j r_j*) = 1/Radius(r_j)
     g[NumEigVals+1] -= 0.25 / Radius1;
 
     for(size_t k = j+1; k < i_min; k++) {
@@ -334,6 +342,7 @@ void ThirdOrder(const std::vector<T>& x, std::vector<T>& g, const int NumRoots, 
     b1 = Lin_IntPol(x[j], RealRange, ImagRange, ImagDiff_over_RealDiff);
     Radius1 = x[j]*x[j] + b1*b1;
 
+    // 1/(r_j r_j*) = 1/Radius(r_j)
     g[NumEigVals+1] -= 0.25 / Radius1;
 
     for(size_t k = j+1; k < NumRoots; k++) {
@@ -359,6 +368,7 @@ T ThirdOrder(const std::vector<T>& x, const int NumRoots,
     b1 = Lin_IntPol(x[j], RealRange, ImagRange, ImagDiff_over_RealDiff);
     Radius1 = x[j]*x[j] + b1*b1;
 
+    // 1/(r_j r_j*) = 1/Radius(r_j)
     g -= 0.25 / Radius1;
 
     for(size_t k = j+1; k < NumRoots; k++) {
@@ -402,6 +412,7 @@ T ThirdOrder(const std::vector<T>& x, const int NumRoots,
     b1 = Lin_IntPol(x[j], RealRange, ImagRange, ImagDiff_over_RealDiff);
     Radius1 = x[j]*x[j] + b1*b1;
 
+    // 1/(r_j r_j*) = 1/Radius(r_j)
     g -= 0.25 / Radius1;
 
     for(size_t k = j+1; k < i_min; k++) {
@@ -423,6 +434,7 @@ T ThirdOrder(const std::vector<T>& x, const int NumRoots,
     b1 = Lin_IntPol(x[j], RealRange, ImagRange, ImagDiff_over_RealDiff);
     Radius1 = x[j]*x[j] + b1*b1;
 
+    // 1/(r_j r_j*) = 1/Radius(r_j)
     g -= 0.25 / Radius1;
 
     for(size_t k = j+1; k < NumRoots; k++) {
