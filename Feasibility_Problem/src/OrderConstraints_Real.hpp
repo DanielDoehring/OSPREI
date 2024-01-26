@@ -22,9 +22,9 @@ Since we have that for complex-conjugated roots 1/r + 1/r* = 2 * Re(r)/Radius(r)
 
 For third order, we demand 1/6 = sum_{i,j i != j}^S 1/(r_i r_j)
 For complex conjugated roots we have 
-1/(r_i r_i*) + 1/(r_i r_j) + 1/(r_i r_j*) + 1/(r_i* r_j) + 1/(r_i* r_j*)
-= 1/Radius(r_i) + 4 * Re(r_i) * Re(r_j) / (Radius(r_i)^2 + Radius(r_j)^2)
-=> 1.0/24.0 = sum_{i,j i != j}^(S/2) 0.25/Radius(r_i) +  Re(r_i) * Re(r_j) / (Radius(r_i)^2 + Radius(r_j)^2)
+1/(r_i r_i*) + 1/(r_j r_j*) + 1/(r_i r_j) + 1/(r_i r_j*) + 1/(r_i* r_j) + 1/(r_i* r_j*)
+= 1/Radius(r_i) + 1/Radius(r_j) + 4 * Re(r_i) * Re(r_j) / (Radius(r_i)^2 + Radius(r_j)^2)
+=> 1.0/24.0 = sum_{i}^(S/2) 0.25/Radius(r_i) + sum_{j; i != j}^(S/2) Re(r_i) * Re(r_j) / (Radius(r_i)^2 + Radius(r_j)^2)
 
 */
 
@@ -449,4 +449,14 @@ T ThirdOrder(const std::vector<T>& x, const int NumRoots,
 }
 
 
+/// Fourth ORDER ///
+
+// For Odd Base Polynom => Even Lower Degree Polynomial
+template <typename T>
+void FourthOrder(const T* x, T* g, const int NumRoots, const int NumEigVals,
+                 const std::vector<T>& RealRange, const std::vector<T>& ImagRange,
+                 const std::vector<T>& ImagDiff_over_RealDiff)
+{
+  
+}
 #endif
