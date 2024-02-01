@@ -449,4 +449,416 @@ T ThirdOrder(const std::vector<T>& xy, const int NumRoots,
 }
 
 
+/// FOURTH ORDER ///
+
+
+// For Odd Base Polynom => Even Lower Degree Polynomial
+template <typename T>
+void FourthOrder(const T* xy, T* g, const int NumRoots, const int NumEigVals,
+                 const std::vector<T>& RealRange, const std::vector<T>& ImagRange,
+                 const std::vector<T>& ImagDiff_over_RealDiff)
+{
+  g[NumEigVals+2] = 1.0/48.0;
+
+  T b1, b2, b3, Radius1, Radius2, Radius3;
+
+  for(size_t j = 0; j < NumRoots; j++) {
+    b1 = Lin_IntPol(xy[j], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[j + NumRoots];
+    Radius1 = xy[j]*xy[j] + b1*b1;
+
+    for(size_t k = j+1; k < NumRoots; k++) {
+      b2 = Lin_IntPol(xy[k], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[k + NumRoots];
+      Radius2 = xy[k]*xy[k] + b2*b2;
+
+      for(size_t l = k+1; l < NumRoots; l++) {
+        b3 = Lin_IntPol(xy[l], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[l + NumRoots];
+        Radius3 = xy[l]*xy[l] + b3*b3;
+
+        g[NumEigVals+2] += (xy[j] * (b2*b2 + 4 * xy[j] * xy[k] + xy[l]*xy[l] + b3*b3) + 
+                            xy[l] * (xy[k] * (xy[k] + xy[l]) + b2*b2) +
+                            xy[k] * b3*b3) / (Radius1 * Radius2 * Radius3);
+      }
+    }
+  }
+}
+
+// For Even Base Polynomial => Odd Lower degree polynomial
+template <typename T>
+void FourthOrder(const T* xy, T* g, const int NumRoots, const int NumEigVals,
+                 const std::vector<T>& RealRange, const std::vector<T>& ImagRange, 
+                 const size_t i_min, const std::vector<T>& ImagDiff_over_RealDiff)
+{
+  g[NumEigVals+2] = 1.0/48.0;
+
+  T b1, b2, b3, Radius1, Radius2, Radius3;
+
+  // Handle combination: Real with complex conjugated
+  for(size_t j = 0; j < i_min; j++) {
+    b1 = Lin_IntPol(xy[j], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[j + NumRoots];
+    Radius1 = xy[j]*xy[j] + b1*b1;
+
+    for(size_t k = j+1; k < i_min; k++) {
+      b2 = Lin_IntPol(xy[k], RealRange, ImagRange, ImagDiff_over_RealDiff)  + xy[k + NumRoots];
+      Radius2 = xy[k]*xy[k] + b2*b2;
+
+      g[NumEigVals+2] += 0.5 * (4.0*xy[j]*xy[k] + xy[k]*xy[k] + b2*b2)/(xy[i_min] * Radius1 * Radius2);
+    }
+
+    for(size_t k = i_min+1; k < NumRoots; k++) {
+      b2 = Lin_IntPol(xy[k], RealRange, ImagRange, ImagDiff_over_RealDiff)  + xy[k + NumRoots];
+      Radius2 = xy[k]*xy[k] + b2*b2;
+
+      g[NumEigVals+2] += 0.5 * (4.0*xy[j]*xy[k] + xy[k]*xy[k] + b2*b2)/(xy[i_min] * Radius1 * Radius2);
+    }
+  }
+
+  for(size_t j = i_min + 1; j < NumRoots; j++) {
+    b1 = Lin_IntPol(xy[j], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[j + NumRoots];
+    Radius1 = xy[j]*xy[j] + b1*b1;
+
+    for(size_t k = j+1; k < NumRoots; k++) {
+      b2 = Lin_IntPol(xy[k], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[k + NumRoots];
+      Radius2 = xy[k]*xy[k] + b2*b2;
+
+      g[NumEigVals+2] += 0.5 * (4.0*xy[j]*xy[k] + xy[k]*xy[k] + b2*b2)/(xy[i_min] * Radius1 * Radius2);
+    }
+  }
+
+  // Now: Complex Conjugated <-> Complex Conjugated
+  for(size_t j = 0; j < i_min; j++) {
+    b1 = Lin_IntPol(xy[j], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[j + NumRoots];
+    Radius1 = xy[j]*xy[j] + b1*b1;
+
+    for(size_t k = j+1; k < i_min; k++) {
+      b2 = Lin_IntPol(xy[k], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[k + NumRoots];
+      Radius2 = xy[k]*xy[k] + b2*b2;
+
+      for(size_t l = l+1; l < i_min; l++) {
+        b3 = Lin_IntPol(xy[l], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[l + NumRoots];
+        Radius3 = xy[l]*xy[l] + b3*b3;
+
+        g[NumEigVals+2] += (xy[j] * (b2*b2 + 4 * xy[j] * xy[k] + xy[l]*xy[l] + b3*b3) + 
+                            xy[l] * (xy[k] * (xy[k] + xy[l]) + b2*b2) +
+                            xy[k] * b3*b3) / (Radius1 * Radius2 * Radius3);
+      }
+
+      for(size_t l = i_min+1; l < NumRoots; l++) {
+        b3 = Lin_IntPol(xy[l], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[l + NumRoots];
+        Radius3 = xy[l]*xy[l] + b3*b3;
+
+        g[NumEigVals+2] += (xy[j] * (b2*b2 + 4 * xy[j] * xy[k] + xy[l]*xy[l] + b3*b3) + 
+                            xy[l] * (xy[k] * (xy[k] + xy[l]) + b2*b2) +
+                            xy[k] * b3*b3) / (Radius1 * Radius2 * Radius3);
+      }
+    }
+
+    for(size_t k = i_min+1; k < NumRoots; k++) {
+      b2 = Lin_IntPol(xy[k], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[k + NumRoots];
+      Radius2 = xy[k]*xy[k] + b2*b2;
+
+      for(size_t l = k+1; l < NumRoots; l++) {
+        b3 = Lin_IntPol(xy[l], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[l + NumRoots];
+        Radius3 = xy[l]*xy[l] + b3*b3;
+
+        g[NumEigVals+2] += (xy[j] * (b2*b2 + 4 * xy[j] * xy[k] + xy[l]*xy[l] + b3*b3) + 
+                            xy[l] * (xy[k] * (xy[k] + xy[l]) + b2*b2) +
+                            xy[k] * b3*b3) / (Radius1 * Radius2 * Radius3);
+      }
+    }
+  }
+
+  for(size_t j = i_min + 1; j < NumRoots; j++) {
+    b1 = Lin_IntPol(xy[j], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[j + NumRoots];
+    Radius1 = xy[j]*xy[j] + b1*b1;
+
+    for(size_t k = j+1; k < NumRoots; k++) {
+      b2 = Lin_IntPol(xy[k], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[k + NumRoots];
+      Radius2 = xy[k]*xy[k] + b2*b2;
+
+      for(size_t l = k+1; l < NumRoots; l++) {
+        b3 = Lin_IntPol(xy[l], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[l + NumRoots];
+        Radius3 = xy[l]*xy[l] + b3*b3;
+
+        g[NumEigVals+2] += (xy[j] * (b2*b2 + 4 * xy[j] * xy[k] + xy[l]*xy[l] + b3*b3) + 
+                            xy[l] * (xy[k] * (xy[k] + xy[l]) + b2*b2) +
+                            xy[k] * b3*b3) / (Radius1 * Radius2 * Radius3);
+      }
+    }
+  }
+}
+
+// For Odd Base Polynom => Even Lower Degree Polynomial
+template<typename T, typename PT> // T: for dco types PT: Passive Type: For usual real types
+void FourthOrder(const std::vector<T>& xy, std::vector<T>& g, const int NumRoots, const int NumEigVals,
+                 const std::vector<PT>& RealRange, const std::vector<PT>& ImagRange,
+                 const std::vector<PT>& ImagDiff_over_RealDiff)
+{
+  g[NumEigVals+2] = 1.0/48.0;
+
+  T b1, b2, b3, Radius1, Radius2, Radius3;
+
+  for(size_t j = 0; j < NumRoots; j++) {
+    b1 = Lin_IntPol(xy[j], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[j + NumRoots];
+    Radius1 = xy[j]*xy[j] + b1*b1;
+
+    for(size_t k = j+1; k < NumRoots; k++) {
+      b2 = Lin_IntPol(xy[k], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[k + NumRoots];
+      Radius2 = xy[k]*xy[k] + b2*b2;
+
+      for(size_t l = k+1; l < NumRoots; l++) {
+        b3 = Lin_IntPol(xy[l], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[l + NumRoots];
+        Radius3 = xy[l]*xy[l] + b3*b3;
+
+        g[NumEigVals+2] += (xy[j] * (b2*b2 + 4 * xy[j] * xy[k] + xy[l]*xy[l] + b3*b3) + 
+                            xy[l] * (xy[k] * (xy[k] + xy[l]) + b2*b2) +
+                            xy[k] * b3*b3) / (Radius1 * Radius2 * Radius3);
+      }
+    }
+  }
+}
+
+// For Even Base Polynom => Odd Lower Degree Polynomial
+template<typename T, typename PT> // T: for dco types PT: Passive Type: For usual real types
+void FourthOrder(const std::vector<T>& xy, std::vector<T>& g, const int NumRoots, const int NumEigVals,
+                 const std::vector<PT>& RealRange, const std::vector<PT>& ImagRange, 
+                 const size_t i_min, const std::vector<PT>& ImagDiff_over_RealDiff)
+{
+  g[NumEigVals+2] = 1.0/48.0;
+
+  T b1, b2, b3, Radius1, Radius2, Radius3;
+
+  // Handle combination: Real with complex conjugated
+  for(size_t j = 0; j < i_min; j++) {
+    b1 = Lin_IntPol(xy[j], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[j + NumRoots];
+    Radius1 = xy[j]*xy[j] + b1*b1;
+
+    for(size_t k = j+1; k < i_min; k++) {
+      b2 = Lin_IntPol(xy[k], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[k + NumRoots];
+      Radius2 = xy[k]*xy[k] + b2*b2;
+
+      g[NumEigVals+2] += 0.5 * (4.0*xy[j]*xy[k] + xy[k]*xy[k] + b2*b2)/(xy[i_min] * Radius1 * Radius2);
+    }
+
+    for(size_t k = i_min+1; k < NumRoots; k++) {
+      b2 = Lin_IntPol(xy[k], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[k + NumRoots];
+      Radius2 = xy[k]*xy[k] + b2*b2;
+
+      g[NumEigVals+2] += 0.5 * (4.0*xy[j]*xy[k] + xy[k]*xy[k] + b2*b2)/(xy[i_min] * Radius1 * Radius2);
+    }
+  }
+
+  for(size_t j = i_min + 1; j < NumRoots; j++) {
+    b1 = Lin_IntPol(xy[j], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[j + NumRoots];
+    Radius1 = xy[j]*xy[j] + b1*b1;
+
+    for(size_t k = j+1; k < NumRoots; k++) {
+      b2 = Lin_IntPol(xy[k], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[k + NumRoots];
+      Radius2 = xy[k]*xy[k] + b2*b2;
+
+      g[NumEigVals+2] += 0.5 * (4.0*xy[j]*xy[k] + xy[k]*xy[k] + b2*b2)/(xy[i_min] * Radius1 * Radius2);
+    }
+  }
+
+  // Now: Complex Conjugated <-> Complex Conjugated
+  for(size_t j = 0; j < i_min; j++) {
+    b1 = Lin_IntPol(xy[j], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[j + NumRoots];
+    Radius1 = xy[j]*xy[j] + b1*b1;
+
+    for(size_t k = j+1; k < i_min; k++) {
+      b2 = Lin_IntPol(xy[k], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[k + NumRoots];
+      Radius2 = xy[k]*xy[k] + b2*b2;
+
+      for(size_t l = l+1; l < i_min; l++) {
+        b3 = Lin_IntPol(xy[l], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[l + NumRoots];
+        Radius3 = xy[l]*xy[l] + b3*b3;
+
+        g[NumEigVals+2] += (xy[j] * (b2*b2 + 4 * xy[j] * xy[k] + xy[l]*xy[l] + b3*b3) + 
+                            xy[l] * (xy[k] * (xy[k] + xy[l]) + b2*b2) +
+                            xy[k] * b3*b3) / (Radius1 * Radius2 * Radius3);
+      }
+
+      for(size_t l = i_min+1; l < NumRoots; l++) {
+        b3 = Lin_IntPol(xy[l], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[l + NumRoots];
+        Radius3 = xy[l]*xy[l] + b3*b3;
+
+        g[NumEigVals+2] += (xy[j] * (b2*b2 + 4 * xy[j] * xy[k] + xy[l]*xy[l] + b3*b3) + 
+                            xy[l] * (xy[k] * (xy[k] + xy[l]) + b2*b2) +
+                            xy[k] * b3*b3) / (Radius1 * Radius2 * Radius3);
+      }
+    }
+
+    for(size_t k = i_min+1; k < NumRoots; k++) {
+      b2 = Lin_IntPol(xy[k], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[k + NumRoots];
+      Radius2 = xy[k]*xy[k] + b2*b2;
+
+      for(size_t l = k+1; l < NumRoots; l++) {
+        b3 = Lin_IntPol(xy[l], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[l + NumRoots];
+        Radius3 = xy[l]*xy[l] + b3*b3;
+
+        g[NumEigVals+2] += (xy[j] * (b2*b2 + 4 * xy[j] * xy[k] + xy[l]*xy[l] + b3*b3) + 
+                            xy[l] * (xy[k] * (xy[k] + xy[l]) + b2*b2) +
+                            xy[k] * b3*b3) / (Radius1 * Radius2 * Radius3);
+      }
+    }
+  }
+
+  for(size_t j = i_min + 1; j < NumRoots; j++) {
+    b1 = Lin_IntPol(xy[j], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[j + NumRoots];
+    Radius1 = xy[j]*xy[j] + b1*b1;
+
+    for(size_t k = j+1; k < NumRoots; k++) {
+      b2 = Lin_IntPol(xy[k], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[k + NumRoots];
+      Radius2 = xy[k]*xy[k] + b2*b2;
+
+      for(size_t l = k+1; l < NumRoots; l++) {
+        b3 = Lin_IntPol(xy[l], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[l + NumRoots];
+        Radius3 = xy[l]*xy[l] + b3*b3;
+
+        g[NumEigVals+2] += (xy[j] * (b2*b2 + 4 * xy[j] * xy[k] + xy[l]*xy[l] + b3*b3) + 
+                            xy[l] * (xy[k] * (xy[k] + xy[l]) + b2*b2) +
+                            xy[k] * b3*b3) / (Radius1 * Radius2 * Radius3);
+      }
+    }
+  }
+}
+
+// For Odd Base Polynom => Even Lower Degree Polynomial
+template<typename T, typename PT> // T: for dco types PT: Passive Type: For usual real types
+T FourthOrder(const std::vector<T>& xy, const int NumRoots,
+              const std::vector<PT>& RealRange, const std::vector<PT>& ImagRange,
+              const std::vector<PT>& ImagDiff_over_RealDiff)
+{
+  T g = 1.0/48.0;
+
+  T b1, b2, b3, Radius1, Radius2, Radius3;
+
+  for(size_t j = 0; j < NumRoots; j++) {
+    b1 = Lin_IntPol(xy[j], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[j + NumRoots];
+    Radius1 = xy[j]*xy[j] + b1*b1;
+
+    for(size_t k = j+1; k < NumRoots; k++) {
+      b2 = Lin_IntPol(xy[k], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[k + NumRoots];
+      Radius2 = xy[k]*xy[k] + b2*b2;
+
+      for(size_t l = k+1; l < NumRoots; l++) {
+        b3 = Lin_IntPol(xy[l], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[l + NumRoots];
+        Radius3 = xy[l]*xy[l] + b3*b3;
+
+        g += (xy[j] * (b2*b2 + 4 * xy[j] * xy[k] + xy[l]*xy[l] + b3*b3) + 
+              xy[l] * (xy[k] * (xy[k] + xy[l]) + b2*b2) +
+              xy[k] * b3*b3) / (Radius1 * Radius2 * Radius3);
+      }
+    }
+  }
+
+  return g;
+}
+
+// For Even Base Polynomial => Odd Lower degree polynomial
+template<typename T, typename PT> // T: for dco types PT: Passive Type: For usual real types
+T FourthOrder(const std::vector<T>& xy, const int NumRoots,
+              const std::vector<PT>& RealRange, const std::vector<PT>& ImagRange, 
+              const size_t i_min, const std::vector<PT>& ImagDiff_over_RealDiff)
+{
+  T g = 1.0/48.0;
+
+  T b1, b2, b3, Radius1, Radius2, Radius3;
+
+  // Handle combination: Real with complex conjugated
+  for(size_t j = 0; j < i_min; j++) {
+    b1 = Lin_IntPol(xy[j], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[j + NumRoots];
+    Radius1 = xy[j]*xy[j] + b1*b1;
+
+    for(size_t k = j+1; k < i_min; k++) {
+      b2 = Lin_IntPol(xy[k], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[k + NumRoots];
+      Radius2 = xy[k]*xy[k] + b2*b2;
+
+      g += 0.5 * (4.0*xy[j]*xy[k] + xy[k]*xy[k] + b2*b2)/(xy[i_min] * Radius1 * Radius2);
+    }
+
+    for(size_t k = i_min+1; k < NumRoots; k++) {
+      b2 = Lin_IntPol(xy[k], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[k + NumRoots];
+      Radius2 = xy[k]*xy[k] + b2*b2;
+
+      g += 0.5 * (4.0*xy[j]*xy[k] + xy[k]*xy[k] + b2*b2)/(xy[i_min] * Radius1 * Radius2);
+    }
+  }
+
+  for(size_t j = i_min + 1; j < NumRoots; j++) {
+    b1 = Lin_IntPol(xy[j], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[j + NumRoots];
+    Radius1 = xy[j]*xy[j] + b1*b1;
+
+    for(size_t k = j+1; k < NumRoots; k++) {
+      b2 = Lin_IntPol(xy[k], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[k + NumRoots];
+      Radius2 = xy[k]*xy[k] + b2*b2;
+
+      g += 0.5 * (4.0*xy[j]*xy[k] + xy[k]*xy[k] + b2*b2)/(xy[i_min] * Radius1 * Radius2);
+    }
+  }
+
+  // Now: Complex Conjugated <-> Complex Conjugated
+  for(size_t j = 0; j < i_min; j++) {
+    b1 = Lin_IntPol(xy[j], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[j + NumRoots];
+    Radius1 = xy[j]*xy[j] + b1*b1;
+
+    for(size_t k = j+1; k < i_min; k++) {
+      b2 = Lin_IntPol(xy[k], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[k + NumRoots];
+      Radius2 = xy[k]*xy[k] + b2*b2;
+
+      for(size_t l = l+1; l < i_min; l++) {
+        b3 = Lin_IntPol(xy[l], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[l + NumRoots];
+        Radius3 = xy[l]*xy[l] + b3*b3;
+
+        g += (xy[j] * (b2*b2 + 4 * xy[j] * xy[k] + xy[l]*xy[l] + b3*b3) + 
+              xy[l] * (xy[k] * (xy[k] + xy[l]) + b2*b2) +
+              xy[k] * b3*b3) / (Radius1 * Radius2 * Radius3);
+      }
+
+      for(size_t l = i_min+1; l < NumRoots; l++) {
+        b3 = Lin_IntPol(xy[l], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[l + NumRoots];
+        Radius3 = xy[l]*xy[l] + b3*b3;
+
+        g += (xy[j] * (b2*b2 + 4 * xy[j] * xy[k] + xy[l]*xy[l] + b3*b3) + 
+              xy[l] * (xy[k] * (xy[k] + xy[l]) + b2*b2) +
+              xy[k] * b3*b3) / (Radius1 * Radius2 * Radius3);
+      }
+    }
+
+    for(size_t k = i_min+1; k < NumRoots; k++) {
+      b2 = Lin_IntPol(xy[k], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[k + NumRoots];
+      Radius2 = xy[k]*xy[k] + b2*b2;
+
+      for(size_t l = k+1; l < NumRoots; l++) {
+        b3 = Lin_IntPol(xy[l], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[l + NumRoots];
+        Radius3 = xy[l]*xy[l] + b3*b3;
+
+        g += (xy[j] * (b2*b2 + 4 * xy[j] * xy[k] + xy[l]*xy[l] + b3*b3) + 
+              xy[l] * (xy[k] * (xy[k] + xy[l]) + b2*b2) +
+              xy[k] * b3*b3) / (Radius1 * Radius2 * Radius3);
+      }
+    }
+  }
+
+  for(size_t j = i_min + 1; j < NumRoots; j++) {
+    b1 = Lin_IntPol(xy[j], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[j + NumRoots];
+    Radius1 = xy[j]*xy[j] + b1*b1;
+
+    for(size_t k = j+1; k < NumRoots; k++) {
+      b2 = Lin_IntPol(xy[k], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[k + NumRoots];
+      Radius2 = xy[k]*xy[k] + b2*b2;
+
+      for(size_t l = k+1; l < NumRoots; l++) {
+        b3 = Lin_IntPol(xy[l], RealRange, ImagRange, ImagDiff_over_RealDiff) + xy[l + NumRoots];
+        Radius3 = xy[l]*xy[l] + b3*b3;
+
+        g += (xy[j] * (b2*b2 + 4 * xy[j] * xy[k] + xy[l]*xy[l] + b3*b3) + 
+              xy[l] * (xy[k] * (xy[k] + xy[l]) + b2*b2) +
+              xy[k] * b3*b3) / (Radius1 * Radius2 * Radius3);
+      }
+    }
+  }
+
+  return g;
+}
+
 #endif

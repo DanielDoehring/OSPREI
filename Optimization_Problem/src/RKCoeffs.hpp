@@ -386,7 +386,7 @@ void compute_a_coeffs(const int NumStages, const int NumStageEvals, const bool O
   }
   MC_file.close();
 
-  /*
+  
   const std::vector<MP_Real> SE_Factors = Compute_SE_Factors(NumStages, NumStageEvals, ConsOrder);
 
   std::vector<MP_Real> a_MP = std::vector<MP_Real>(MonCoeffs.begin() + ConsOrder, MonCoeffs.end());
@@ -401,6 +401,7 @@ void compute_a_coeffs(const int NumStages, const int NumStageEvals, const bool O
     }
   }
 
+  /*
   // Sanity check: Re-compute gamma from a
   std::cout << "Sanity check: Re-compute gamma from a" << std::endl << std::endl;
   MP_Real temp;
@@ -417,6 +418,7 @@ void compute_a_coeffs(const int NumStages, const int NumStageEvals, const bool O
     }
     std::cout << temp << std::endl;
   }
+  */
 
   std::cout << std::endl << "Checking stab. constr. computed from a-coeffs in Multiprecision " << std::endl << std::endl;
   CheckStability(NumStages, NumStageEvals, ConsOrder, MonCoeffs, a_MP, SE_Factors, NumEigVals, 
@@ -462,7 +464,6 @@ void compute_a_coeffs(const int NumStages, const int NumStageEvals, const bool O
       a_file << "\n";
   }
   a_file.close();
-  */
 }
 
 #endif

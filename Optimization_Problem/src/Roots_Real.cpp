@@ -61,7 +61,7 @@ Roots_Real::Roots_Real(
   // CARE: Assume that smallest real is @0, next @1
   RealMargin = std::abs(RealMin - std::real(RealEigValsScaled[1]));
 
-  NumConstr = NumEigVals + ConsOrder - 1; // -1 Since one consistency order comes for free
+  NumConstr = NumEigVals + ConsOrder - 1; // First order constraint comes for free
 
   OddDegree = Degree % 2;
   NumRoots  = NumStages / 2; // Note: Integer division is here desired

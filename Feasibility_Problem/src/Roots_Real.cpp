@@ -126,7 +126,7 @@ Roots_Real::Roots_Real(
   std::cout << "Upper bound for reals: " << RealUB << std::endl << std::endl;
   RealMin = *min_element(std::begin(RealEigValsScaled), std::end(RealEigValsScaled));
 
-  NumConstr = NumEigVals + ConsOrder - 1;
+  NumConstr = NumEigVals + ConsOrder - 1; // First order constraint comes for free
 
   OddDegree   = Degree % 2;
   NumUnknowns = NumStages / 2; // Note: Integer division is here desired
@@ -379,6 +379,13 @@ bool Roots_Real::eval_g(
                ThirdOrder(x, g, NumUnknowns, NumEigVals, HullRealScaled, HullImagScaled, ImagDiff_over_RealDiff);
             else
                ThirdOrder(x, g, NumUnknowns, NumEigVals, RealEigValsScaled, ImagEigValsScaled, ImagDiff_over_RealDiff);
+
+            if(ConsOrder == 4) {
+               if(UseHull)
+                  FourthOrder(x, g, NumUnknowns, NumEigVals, HullRealScaled, HullImagScaled, ImagDiff_over_RealDiff);
+               else
+                  FourthOrder(x, g, NumUnknowns, NumEigVals, RealEigValsScaled, ImagEigValsScaled, ImagDiff_over_RealDiff);
+            }
          }
       }
    }
@@ -411,6 +418,15 @@ bool Roots_Real::eval_g(
             else
                ThirdOrder(x, g, NumUnknowns, NumEigVals, RealEigValsScaled, ImagEigValsScaled, 
                           i_min, ImagDiff_over_RealDiff);
+
+            if(ConsOrder == 4) {
+               if(UseHull)
+                  FourthOrder(x, g, NumUnknowns, NumEigVals, HullRealScaled, HullImagScaled, 
+                              i_min, ImagDiff_over_RealDiff);
+               else
+                  FourthOrder(x, g, NumUnknowns, NumEigVals, RealEigValsScaled, ImagEigValsScaled, 
+                              i_min, ImagDiff_over_RealDiff);
+            }
          }
       }
    }
@@ -541,11 +557,11 @@ bool Roots_Real::eval_jac_g(
             ind++;
          }
 
-         // Reset adjoints
-         //dco::derivative(g)[i] = 0.; // Unseed component
-         DCO_M::global_tape->zero_adjoints();
-
          if(ConsOrder >= 3) {
+            // Reset adjoints
+            //dco::derivative(g)[i] = 0.; // Unseed component
+            DCO_M::global_tape->zero_adjoints();
+
             if(OddDegree) {
                if(UseHull)
                   ThirdOrder(x_dco, g, NumUnknowns, NumEigVals, HullRealScaled, HullImagScaled, 
@@ -571,6 +587,39 @@ bool Roots_Real::eval_jac_g(
             for (size_t j = 0; j < NumUnknowns; j++) {
                values[ind] = dco::derivative(x_dco[j]);
                ind++;
+            }
+
+            if(ConsOrder == 4) {
+               // Reset adjoints
+               //dco::derivative(g)[i] = 0.; // Unseed component
+               DCO_M::global_tape->zero_adjoints();
+
+               if(OddDegree) {
+                  if(UseHull)
+                     FourthOrder(x_dco, g, NumUnknowns, NumEigVals, HullRealScaled, HullImagScaled, 
+                                 ImagDiff_over_RealDiff);
+                  else
+                     FourthOrder(x_dco, g, NumUnknowns, NumEigVals, RealEigValsScaled, ImagEigValsScaled, 
+                                 ImagDiff_over_RealDiff);
+               }
+               else {
+                  if(UseHull)
+                     FourthOrder(x_dco, g, NumUnknowns, NumEigVals, HullRealScaled, HullImagScaled, 
+                                 i_min, ImagDiff_over_RealDiff);
+                  else
+                     FourthOrder(x_dco, g, NumUnknowns, NumEigVals, RealEigValsScaled, ImagEigValsScaled, 
+                                 i_min, ImagDiff_over_RealDiff);
+               }
+               
+               dco::derivative(g)[NumEigVals + 2] = 1.; // Seed component
+
+               DCO_M::global_tape->interpret_adjoint(); // Interpret (stored) tape
+
+               // Harvest
+               for (size_t j = 0; j < NumUnknowns; j++) {
+                  values[ind] = dco::derivative(x_dco[j]);
+                  ind++;
+               }
             }
          }
       }
@@ -753,7 +802,6 @@ bool Roots_Real::eval_h(
       /// Stability constraints ///
 
       if(ConsOrder >= 2) {
-
          for (size_t j = 0; j < NumUnknowns; j++) {
             DCO_BM::global_tape->register_variable(dco::value(x_dco[j]) ); // record active input
             DCO_BM::global_tape->register_variable(dco::derivative(x_dco[j]) ); // record active input
@@ -793,7 +841,6 @@ bool Roots_Real::eval_h(
          }
 
          if(ConsOrder >= 3) {
-
             for (size_t j = 0; j < NumUnknowns; j++) {
                DCO_BM::global_tape->register_variable(dco::value(x_dco[j]) ); // record active input
                DCO_BM::global_tape->register_variable(dco::derivative(x_dco[j]) ); // record active input
@@ -830,6 +877,46 @@ bool Roots_Real::eval_h(
                }
 
                DCO_BM::global_tape->zero_adjoints(); // Unseed
+            }
+
+            if(ConsOrder == 4) {
+               for (size_t j = 0; j < NumUnknowns; j++) {
+                  DCO_BM::global_tape->register_variable(dco::value(x_dco[j]) ); // record active input
+                  DCO_BM::global_tape->register_variable(dco::derivative(x_dco[j]) ); // record active input
+
+                  dco::value(dco::value(x_dco[j]) ) = x[j];
+
+                  DCO_M::global_tape->register_variable(x_dco[j]);
+               }
+
+               if(OddDegree) {
+                  if(UseHull)
+                     g = FourthOrder(x_dco, NumUnknowns, HullRealScaled, HullImagScaled, ImagDiff_over_RealDiff);
+                  else
+                     g = FourthOrder(x_dco, NumUnknowns, RealEigValsScaled, ImagEigValsScaled, ImagDiff_over_RealDiff);
+               }
+               else {
+                  if(UseHull)
+                     g = FourthOrder(x_dco, NumUnknowns, HullRealScaled, HullImagScaled, i_min, ImagDiff_over_RealDiff);
+                  else
+                     g = FourthOrder(x_dco, NumUnknowns, RealEigValsScaled, ImagEigValsScaled, i_min, ImagDiff_over_RealDiff);
+               }
+
+               dco::value(dco::derivative(g) ) = 1.; // Seed
+               DCO_M::global_tape->interpret_adjoint(); // Back-propagate from output/adjoint
+
+               ind = 0;
+               for(size_t k = 0; k < NumUnknowns; k++) {
+                  dco::derivative(dco::derivative(x_dco[k]) ) = 1.; // Seed
+
+                  DCO_BM::global_tape->interpret_adjoint(); // Back-propagate from output/adjoint
+                  for(size_t j = 0; j <= k; j++) {
+                     values[ind] += lambda[NumEigVals + 2] * dco::derivative(dco::value(x_dco[j]) );
+                     ind++;
+                  }
+
+                  DCO_BM::global_tape->zero_adjoints(); // Unseed
+               }
             }
          }
       }
@@ -965,8 +1052,11 @@ void Roots_Real::finalize_solution(
 
    if(ConsOrder >= 2) {
       std::cout << std::endl << "Final value of 2nd order constraint: " << g[NumEigVals] << std::endl;
-      if(ConsOrder >= 3)
+      if(ConsOrder >= 3) {
          std::cout << "Final value of 3rd order constraint: " << g[NumEigVals + 1] << std::endl;
+         if(ConsOrder == 4)
+            std::cout << "Final value of 4th order constraint: " << g[NumEigVals + 2] << std::endl;
+      }
    }
 }
 // [TNLP_finalize_solution]

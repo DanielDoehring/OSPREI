@@ -60,7 +60,7 @@ Roots_RealImag::Roots_RealImag(
   RealMin = *min_element(std::begin(RealEigValsScaled), std::end(RealEigValsScaled));
   ImagMax = *max_element(std::begin(ImagEigValsScaled), std::end(ImagEigValsScaled));
 
-  NumConstr = NumEigVals + ConsOrder - 1; // -1 Since one consistency order comes for free
+  NumConstr = NumEigVals + ConsOrder - 1; // First order constraint comes for free
 
   OddDegree = Degree % 2;
   NumRoots  = NumStages / 2; // Note: Integer division is here desired

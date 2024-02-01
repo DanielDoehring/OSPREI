@@ -13,7 +13,7 @@ expect_infeasible_problem yes
 #acceptable_tol 1e3
 
 # BFGS Option (sometimes used for e.g. first order consistency, then fine-tuned)
-hessian_approximation limited-memory
+#hessian_approximation limited-memory
 
 # Check derivatives computed via dco - in other words, show errors of finite differences ;-)
-#derivative_test second-order
+derivative_test second-order
