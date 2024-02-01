@@ -350,6 +350,13 @@ bool Roots_RealImag::eval_g(
                ThirdOrder(xy, g, NumRoots, NumEigVals, HullRealScaled, HullImagScaled);
             else
                ThirdOrder(xy, g, NumRoots, NumEigVals, RealEigValsScaled, ImagEigValsScaled);
+
+            if(ConsOrder == 4) {
+               if(UseHull)
+                  FourthOrder(xy, g, NumRoots, NumEigVals, HullRealScaled, HullImagScaled);
+               else
+                  FourthOrder(xy, g, NumRoots, NumEigVals, RealEigValsScaled, ImagEigValsScaled);
+            }
          }
       }
    }
@@ -382,6 +389,15 @@ bool Roots_RealImag::eval_g(
             else
                ThirdOrder(xy, g, NumRoots, NumEigVals, RealEigValsScaled, ImagEigValsScaled, 
                           ImagDiff_over_RealDiff, i_min);
+
+            if(ConsOrder == 4) {
+               if(UseHull)
+                  FourthOrder(xy, g, NumRoots, NumEigVals, HullRealScaled, HullImagScaled, 
+                              ImagDiff_over_RealDiff, i_min);
+               else
+                  FourthOrder(xy, g, NumRoots, NumEigVals, RealEigValsScaled, ImagEigValsScaled, 
+                              ImagDiff_over_RealDiff, i_min);
+            }
          }
       }
    }
@@ -532,6 +548,36 @@ bool Roots_RealImag::eval_jac_g(
             for (size_t j = 0; j < NumUnknowns; j++) {
                values[ind] = dco::derivative(xy_dco[j]);
                ind++;
+            }
+
+            if(ConsOrder == 4){
+               // Reset adjoints
+               DCO_M::global_tape->zero_adjoints();
+               
+               if(OddDegree) {
+                  if(UseHull)
+                     FourthOrder(xy_dco, g, NumRoots, NumEigVals, HullRealScaled, HullImagScaled);
+                  else            
+                     FourthOrder(xy_dco, g, NumRoots, NumEigVals, RealEigValsScaled, ImagEigValsScaled);
+               }
+               else {
+                  if(UseHull)
+                     FourthOrder(xy_dco, g, NumRoots, NumEigVals, HullRealScaled, HullImagScaled, 
+                                 ImagDiff_over_RealDiff, i_min);
+                  else            
+                     FourthOrder(xy_dco, g, NumRoots, NumEigVals, RealEigValsScaled, ImagEigValsScaled, 
+                                 ImagDiff_over_RealDiff, i_min);
+               }
+               
+               dco::derivative(g)[NumEigVals+2] = 1.; // Seed component
+
+               DCO_M::global_tape->interpret_adjoint(); // Interpret (stored) tape
+
+               // Harvest
+               for (size_t j = 0; j < NumUnknowns; j++) {
+                  values[ind] = dco::derivative(xy_dco[j]);
+                  ind++;
+               }
             }
          }
       }
@@ -792,6 +838,48 @@ bool Roots_RealImag::eval_h(
 
                DCO_BM::global_tape->zero_adjoints(); // Unseed
             }
+
+            if(ConsOrder == 4){
+               for (size_t j = 0; j < NumUnknowns; j++) {
+                  DCO_BM::global_tape->register_variable(dco::value(xy_dco[j]) ); // record active input
+                  DCO_BM::global_tape->register_variable(dco::derivative(xy_dco[j]) ); // record active input
+
+                  dco::value(dco::value(xy_dco[j]) ) = xy[j];
+
+                  DCO_M::global_tape->register_variable(xy_dco[j]);
+               }
+
+               if(OddDegree) {
+                  if(UseHull)
+                     g = FourthOrder(xy_dco, NumRoots, HullRealScaled, HullImagScaled);
+                  else
+                     g = FourthOrder(xy_dco, NumRoots, RealEigValsScaled, ImagEigValsScaled);
+               }
+               else {
+                  if(UseHull)
+                     g = FourthOrder(xy_dco, NumRoots, HullRealScaled, HullImagScaled, 
+                                     ImagDiff_over_RealDiff, i_min);
+                  else
+                     g = FourthOrder(xy_dco, NumRoots, RealEigValsScaled, ImagEigValsScaled, 
+                                     ImagDiff_over_RealDiff, i_min);
+               }
+
+               dco::value(dco::derivative(g) ) = 1.; // Seed
+               DCO_M::global_tape->interpret_adjoint(); // Back-propagate from output/adjoint
+
+               ind = 0;
+               for(size_t k = 0; k < NumUnknowns; k++) {
+                  dco::derivative(dco::derivative(xy_dco[k]) ) = 1.; // Seed
+
+                  DCO_BM::global_tape->interpret_adjoint(); // Back-propagate from output/adjoint
+                  for(size_t j = 0; j <= k; j++) {
+                     values[ind] += lambda[NumEigVals+2] * dco::derivative(dco::value(xy_dco[j]) );
+                     ind++;
+                  }
+
+                  DCO_BM::global_tape->zero_adjoints(); // Unseed
+               }
+            }
          }
       }
 
@@ -954,7 +1042,7 @@ void Roots_RealImag::finalize_solution(
       }
       std::cout << std::endl << "Final value of 2nd order constraint: " << Constr[NumEigVals] << std::endl;
 
-      if(ConsOrder >= 3) {   
+      if(ConsOrder >= 3) {
          if(OddDegree) {
             if(UseHull)
                ThirdOrder(xy, Constr, NumRoots, NumEigVals, HullRealScaled, HullImagScaled);
@@ -970,6 +1058,24 @@ void Roots_RealImag::finalize_solution(
                           ImagDiff_over_RealDiff, i_min);
          }
          std::cout << "Final value of 3rd order constraint: " << Constr[NumEigVals+1] << std::endl;
+
+         if(ConsOrder == 4){
+            if(OddDegree) {
+               if(UseHull)
+                  FourthOrder(xy, Constr, NumRoots, NumEigVals, HullRealScaled, HullImagScaled);
+               else
+                  FourthOrder(xy, Constr, NumRoots, NumEigVals, RealEigValsScaled, ImagEigValsScaled);
+               }
+            else {
+               if(UseHull)
+                  FourthOrder(xy, Constr, NumRoots, NumEigVals, HullRealScaled, HullImagScaled, 
+                              ImagDiff_over_RealDiff, i_min);
+               else
+                  FourthOrder(xy, Constr, NumRoots, NumEigVals, RealEigValsScaled, ImagEigValsScaled, 
+                              ImagDiff_over_RealDiff, i_min);
+            }
+            std::cout << "Final value of 4th order constraint: " << Constr[NumEigVals+2] << std::endl;
+         }
       }
    }
 

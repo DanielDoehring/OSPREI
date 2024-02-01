@@ -54,6 +54,7 @@ If r_i is real, this simplifies to
 + 1/(r_i r_j* r_k) + 1/(r_i r_j* r_k*)
 = [4 Re(r_j) Re(r_k) + Re(r_k^2) + Im(r_k)^2] 
   / [r_i Radius(r_j)^2 Radius(r_k)^2]
+  
 */
 
 /// SECOND ORDER ///

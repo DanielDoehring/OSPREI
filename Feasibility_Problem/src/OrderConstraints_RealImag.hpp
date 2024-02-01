@@ -20,12 +20,41 @@ Since we have that for complex-conjugated roots 1/r + 1/r* = 2 * Re(r)/Radius(r)
 0.5 = - sum_i^(S/2) 2 * Re(r_i)/Radius(r_i)^2
 => 0.25 = - sum_i^(S/2) Re(r_i)/Radius(r_i)^2
 
+
 For third order, we demand 1/6 = sum_{i,j i != j}^S 1/(r_i r_j)
 For complex conjugated roots we have 
 1/(r_i r_i*) + 1/(r_j r_j*) + 1/(r_i r_j) + 1/(r_i r_j*) + 1/(r_i* r_j) + 1/(r_i* r_j*)
 = 1/Radius(r_i) + 1/Radius(r_j) + 4 * Re(r_i) * Re(r_j) / (Radius(r_i)^2 + Radius(r_j)^2)
 => 1.0/24.0 = sum_{i}^(S/2) 0.25/Radius(r_i) + sum_{j; i != j}^(S/2) Re(r_i) * Re(r_j) / (Radius(r_i)^2 + Radius(r_j)^2)
 
+If r_i is real, this simplifies to 
+1/(r_i r_j) + 1/(r_i r_j*) = 2 * Re(r_j) / ( r_i Radius(r_j)^2 ) 
+
+
+For fourth order, we demand 1/24 = sum_{i,j,k i != j != k}^S 1/(r_i r_j r_k)
+For complex conjugated roots we have
+  1/(r_i r_i* r_j) + 1/(r_i r_i* r_j*) + 1/(r_i r_i* r_k) + 1/(r_i r_i* r_k*)
++ 1/(r_i r_j r_j*) + 1/(r_i r_j r_k) + 1/(r_i r_j r_k*) 
++ 1/(r_i r_j* r_k) + 1/(r_i r_j* r_k*) + 1/(r_i r_k r_k*)
++ 1/(r_i* r_j r_j*) + 1/(r_i* r_j r_k) + 1/(r_i* r_j r_k*
++ 1/(r_i* r_j* r_k) + 1/(r_i* r_j* r_k*) + 1/(r_i* r_k r_k*)
+
++ 1/(r_j r_j* r_k) + 1/(r_j r_j* r_k*) + 1/(r_j r_k r_k*) + 1/(r_j* r_k r_k*) 
+
+The first 5 lines can be rewritten as
+2 * [Re(r_i) * ( Re(r_j)^2 + 4Re(r_j)Re(r_k) + Im(r_j)^2 + Re(r_k)^2 + Im(r_k)^2) + 
+     Re(r_k) * ( Re(r_j) * ( Re(r_j) + Re(r_k) ) + Im(r_j)^2 ) +
+     Re(r_j) * Im(r_k)^2] 
+/ ( Radius(r_i)^2 * Radius(r_j)^2 * Radius(r_k)^2 )
+
+and this is what will be implemented, similar to the third order constraint.
+
+If r_i is real, this simplifies to 
+  1/(r_i r_j r_j*) + 1/(r_i r_j r_k) + 1/(r_i r_j r_k*)
++ 1/(r_i r_j* r_k) + 1/(r_i r_j* r_k*)
+= [4 Re(r_j) Re(r_k) + Re(r_k^2) + Im(r_k)^2] 
+  / [r_i Radius(r_j)^2 Radius(r_k)^2]
+  
 */
 
 /// SECOND ORDER ///

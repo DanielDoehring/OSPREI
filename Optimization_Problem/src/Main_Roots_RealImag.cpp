@@ -23,8 +23,8 @@ int main(int argc, char** argv) {
    const int NumStagesRef = std::stoi(argv[3]);
    const Number dtRef     = std::stod(argv[4]);
 
-   // Currently only order 1 to 3 are implemented
-   assert(ConsOrder == 1 || ConsOrder == 2 || ConsOrder == 3);
+   // Currently only order 1 to 4 are implemented
+   assert(ConsOrder == 1 || ConsOrder == 2 || ConsOrder == 3 || ConsOrder == 4);
 
    // Create a new instance of your nlp (use Ipopt::SmartPtr)
    SmartPtr<TNLP> mynlp;
