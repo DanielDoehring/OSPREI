@@ -1,5 +1,3 @@
-# OSPREI
-
 [![DOI](https://zenodo.org/badge/638126735.svg)](https://zenodo.org/badge/latestdoi/638126735)
 
 ```
@@ -75,8 +73,14 @@ Again, this is best seen in the examples.
 If none of these files is present, default `Ipopt` options are used.
 
 ## Acknowledgements
-![DFG](https://github.com/DanielDoehring/OSPREI/assets/75639095/a0ebb057-a0c5-4dc9-96df-03ac74894d2a)
+
+This code is a result of research performed in the research unit "Structure-Preserving Numerical Methods for Bulk- and
+Interface Coupling of Heterogeneous Models (SNuBIC)"
+
+![snubic-logo6](https://github.com/DanielDoehring/OSPREI/assets/75639095/a88000ca-d43c-4ac2-94d8-a0636fc7f32c)
 
 This project has benefited from funding by the Deutsche Forschungsgemeinschaft (DFG, German Research Foundation)
 through the research unit FOR 5409 "Structure-Preserving Numerical Methods for Bulk- and
 Interface Coupling of Heterogeneous Models (SNuBIC)" (project number 463312734).
+
+![DFG](https://github.com/DanielDoehring/OSPREI/assets/75639095/a0ebb057-a0c5-4dc9-96df-03ac74894d2a)
