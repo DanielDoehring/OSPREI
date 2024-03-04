@@ -72,6 +72,11 @@ Again, this is best seen in the examples.
 `Roots_Real.exe` looks for the parameter file `Roots_Real.opt` and `Roots_RealImag.exe` accordingly for `Roots_RealImag.opt` in the working directory.
 If none of these files is present, default `Ipopt` options are used.
 
+## Affiliation
+[rwth_acom_en_rgb_cropped.pdf](https://github.com/DanielDoehring/OSPREI/files/14485438/rwth_acom_en_rgb_cropped.pdf)
+
+This project was developed at the [Institute for Applied and Computational Mathematics (ACoM) at RWTH Aachen University](https://www.acom.rwth-aachen.de/).
+
 ## Acknowledgements
 
 This code is a result of research performed in the research unit "Structure-Preserving Numerical Methods for Bulk- and
