@@ -73,7 +73,7 @@ Again, this is best seen in the examples.
 If none of these files is present, default `Ipopt` options are used.
 
 ## Affiliation
-[rwth_acom_en_rgb_cropped.pdf](https://github.com/DanielDoehring/OSPREI/files/14485438/rwth_acom_en_rgb_cropped.pdf)
+![rwth_acom_en_rgb_cropped](https://github.com/DanielDoehring/OSPREI/assets/75639095/8de4aa2f-e2b6-463f-b2ce-a2652e546710)
 
 This project was developed at the [Institute for Applied and Computational Mathematics (ACoM) at RWTH Aachen University](https://www.acom.rwth-aachen.de/).
 
