@@ -72,6 +72,21 @@ Again, this is best seen in the examples.
 `Roots_Real.exe` looks for the parameter file `Roots_Real.opt` and `Roots_RealImag.exe` accordingly for `Roots_RealImag.opt` in the working directory.
 If none of these files is present, default `Ipopt` options are used.
 
+## Credit
+
+If you use the implementations provided here, please also cite this repository as
+```bibtex
+@misc{OSPREI,
+  author={Daniel Doehring and Manuel Torrilhon},
+  title={{OSPREI}: Optimal Stability Polynomials in Roots for Explicit Time Integration},
+  year={2023},
+  doi={10.5281/zenodo.8009493},
+  publisher = {GitHub},
+  journal = {GitHub Repository},
+  howpublished = {\url{https://github.com/DanielDoehring/OSPREI}}
+}
+```
+
 ## Affiliation
 ![rwth_acom_en_rgb_cropped](https://github.com/DanielDoehring/OSPREI/assets/75639095/8de4aa2f-e2b6-463f-b2ce-a2652e546710)
 
