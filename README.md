@@ -77,7 +77,7 @@ If none of these files is present, default `Ipopt` options are used.
 If you use the implementations provided here, please also cite this repository as
 ```bibtex
 @misc{OSPREI,
-  author={Daniel Doehring and Manuel Torrilhon},
+  author={Doehring, Daniel and Torrilhon, Manuel},
   title={{OSPREI}: Optimal Stability Polynomials in Roots for Explicit Time Integration},
   year={2023},
   doi={10.5281/zenodo.8009493},
